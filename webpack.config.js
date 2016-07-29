@@ -29,7 +29,7 @@ module.exports = {
     }]
   },
   output: {
-    library: 'library-boilerplate',
+    library: 'worldview.js',
     libraryTarget: 'umd'
   },
   plugins: plugins,
