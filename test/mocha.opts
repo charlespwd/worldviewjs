@@ -1,2 +1,4 @@
 --compilers js:babel/register
 --recursive
+--reporter mocha-multi
+--require ./test/helpers.js
