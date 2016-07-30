@@ -1,97 +1,158 @@
-const scaleVector = (k, v) => v.map(x => k * x);
-const addVectors = (v, u) => v.map((x, i) => x + u[i]);
-const minusVectors = (v, u) => v.map((x, i) => x - u[i]);
-const pointer = ({ pageX, pageY }) => [pageX, pageY];
+import { scaleVector, addVectors, minusVectors } from './utils/vector'
+import { matrixMultiply, matrixSubtract, R } from './utils/matrix'
+import { flow } from './utils/functional'
+const pointer = ({ pageX, pageY }) => [pageX, pageY]
 
-export default function PanZoom(render /* , opts */ ) {
-  let zoom = 1;
-  let containerOrigin_document = [0, 0]; // default, the position of the origin of the unscaled coords
-  let worldOrigin_container = [0, 0]; // default, the position of the origin of the scaled coords relative to the container
-  let worldSize = [0, 0];
+export default function WorldView(render/* , opts */) {
+  /// State
+  // scale level
+  let zoom = 1
 
-  const flow = (f, g) => (x) => g(f(x))
+  // rotation angle in degrees
+  let theta = 0
+
+  // The container's origin relative to the document's
+  let containerOrigin_document = [0, 0]
+
+  // The world's origin relative to the container's
+  let worldOrigin_container = [0, 0]
+
+  // The unscaled size of the world
+  let worldSize = [0, 0]
+
+  // The size of the container (viewport)
+  let containerSize = [0, 0]
+
+  // Transformations
   const fromDocumentToContainer = (vector_document) => (
     minusVectors(vector_document, containerOrigin_document)
   )
+
   const fromContainerToDocument = (vector_container) => (
     addVectors(vector_container, containerOrigin_document)
   )
+
   const fromWorldToContainer = (vector_world) => (
     addVectors(scaleVector(zoom, vector_world), worldOrigin_container)
   )
+
   const fromContainerToWorld = (vector_container) => (
     scaleVector(1 / zoom, minusVectors(vector_container, worldOrigin_container))
   )
+
   const fromWorldToDocument = flow(fromWorldToContainer, fromContainerToDocument)
   const fromDocumentToWorld = flow(fromDocumentToContainer, fromContainerToWorld)
 
-  const transform = {
+  /// Various centers
+  const center_world = () => scaleVector(1 / 2, worldSize)
+  const centerWorld_document = () => fromWorldToDocument(center_world())
+  const centerWorld_container = () => fromWorldToContainer(center_world())
+  const center_container = () => scaleVector(1 / 2, containerSize)
+  const centerContainer_document = () => fromContainerToDocument(center_container())
+  const centerContainer_world = () => fromContainerToWorld(center_container())
+
+  const transformations = {
     fromContainerToDocument,
     fromContainerToWorld,
     fromDocumentToContainer,
     fromDocumentToWorld,
     fromWorldToContainer,
     fromWorldToDocument,
-  };
+  }
 
   return {
     debug,
-    transform,
-    setDimensions,
+    panBy,
+    rotateBy,
+    setContainerDimensions,
     setContainerOrigin,
+    setWorldDimensions,
+    transformations,
+    transform,
     zoomTo,
-  };
+  }
 
   function debug() {
     return {
+      centerContainer_document: centerContainer_document(),
+      centerContainer_world: centerContainer_world(),
+      centerWorld_container: centerWorld_container(),
+      centerWorld_document: centerWorld_document(),
+      center_container: center_container(),
+      center_world: center_world(),
       worldOrigin_container,
-      center_world,
-      centerWorld_document,
-      centerWorld_container,
     }
   }
 
-  function center_world() {
-    return scaleVector(1/2, worldSize);
+  function setWorldDimensions(width, height) {
+    worldSize = [width, height]
   }
 
-  function centerWorld_document() {
-    return transform.fromWorldToDocument(center_world());
+  function setContainerDimensions(width, height) {
+    containerSize = [width, height]
   }
 
-  function centerWorld_container(argument) {
-    return transform.fromWorldToContainer(center_world());
-  }
-
-  function setDimensions(worldWidth, worldHeight) {
-    worldSize = [worldWidth, worldHeight];
-  }
-
-  function setContainerOrigin(x, y) {
-    containerOrigin_document = [x, y];
+  function setContainerOrigin(x_document, y_document) {
+    containerOrigin_document = [x_document, y_document]
   }
 
   // When zooming at a fixed point in the container
-  function zoomTo(e = {} , newZoom) {
-    const pointer_document = typeof e.pageX === 'number'
-      ? pointer(e)
-      : centerWorld_document();
-    const pointer_container = (
-      transform.fromDocumentToContainer(pointer_document)
-    );
+  function zoomTo(e = { pageX: undefined, pageY: undefined }, newZoom) {
+    const pointer_container = typeof e.pageX === 'number'
+      ? fromDocumentToContainer(pointer(e))
+      : center_container()
+    return zoomAt(pointer_container, newZoom)
+  }
 
-    const deltaZoom = zoom - newZoom;
-    zoom = newZoom;
+  function zoomAt(pointer_container, newZoom) {
+    const deltaZoom = zoom - newZoom
+    zoom = newZoom
 
     worldOrigin_container = minusVectors(
       scaleVector(deltaZoom, pointer_container),
       worldOrigin_container
-    );
+    )
 
-    render(worldOrigin_container, zoom);
+    return publish()
   }
 
-  function panStart() {
+  function panBy(translation_container) {
+    worldOrigin_container = addVectors(
+      translation_container,
+      worldOrigin_container
+    )
 
+    return publish()
+  }
+
+  function rotateBy(degrees, pivot_container) {
+    pivot_container = pivot_container || center_container()
+
+    const DR = matrixSubtract(R(theta), R(theta + degrees))
+
+    worldOrigin_container = addVectors(
+      scaleVector(
+        zoom,
+        matrixMultiply(DR, pivot_container)
+      ),
+      worldOrigin_container
+    )
+
+    theta = theta + degrees
+
+    return publish()
+  }
+
+  function publish() {
+    render(transform())
+    return transform()
+  }
+
+  function transform() {
+    return {
+      translate: worldOrigin_container,
+      rotate: theta,
+      scale: zoom,
+    }
   }
 }
