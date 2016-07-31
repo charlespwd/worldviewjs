@@ -17,3 +17,7 @@ Assertion.addMethod('approxEqual', function approxEqual(X, epsilon = 1e16) {
     new Assertion(actual).to.be.a(typeof X)
   }
 })
+
+if (typeof document === 'undefined') {
+  global.document = {};
+}

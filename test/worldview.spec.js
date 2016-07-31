@@ -1,7 +1,6 @@
 import WorldView from '../src/worldview'
 import { minusVectors } from '../src/utils/vector'
 import { expect } from 'chai'
-import sinon from 'sinon'
 
 describe('Module: WorldView', () => {
   let view
@@ -10,8 +9,7 @@ describe('Module: WorldView', () => {
   let transform
 
   beforeEach(() => {
-    renderSpy = sinon.spy()
-    view = new WorldView(renderSpy)
+    view = new WorldView()
     view.setWorldDimensions(100, 100)
     view.setContainerDimensions(100, 100)
     t = view.transformations

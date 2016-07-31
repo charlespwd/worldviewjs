@@ -4,7 +4,7 @@ import { flow } from './utils/functional'
 
 const pointer = ({ pageX, pageY }) => [pageX, pageY]
 
-export default function WorldView(render/* , opts */) {
+export default function WorldView(/* opts */) {
   /// State
   // scale level
   let zoom = 1
@@ -82,7 +82,6 @@ export default function WorldView(render/* , opts */) {
     transform,
     transformations,
     zoomTo,
-    zoomToMouse,
   }
 
   function debug() {
@@ -107,13 +106,6 @@ export default function WorldView(render/* , opts */) {
 
   function setContainerOrigin(x_document, y_document) {
     containerOrigin_document = [x_document, y_document]
-  }
-
-  function zoomToMouse(newZoom, e = { pageX: undefined, pageY: undefined }) {
-    const pointer_world = typeof e.pageX === 'number'
-      ? fromDocumentToWorld(pointer(e))
-      : centerContainer_world()
-    return zoomAt(newZoom, pointer_world)
   }
 
   function zoomTo(newZoom, pointer_document) {
@@ -161,7 +153,7 @@ export default function WorldView(render/* , opts */) {
 
     zoom = newZoom
 
-    return publish()
+    return transform()
   }
 
   function panBy(translation_container) {
@@ -198,7 +190,7 @@ export default function WorldView(render/* , opts */) {
       )
     )
 
-    return publish()
+    return transform()
   }
 
   function rotateBy(degrees, pivot_container) {
@@ -237,11 +229,6 @@ export default function WorldView(render/* , opts */) {
 
     theta = theta + degrees
 
-    return publish()
-  }
-
-  function publish() {
-    render(transform())
     return transform()
   }
 
