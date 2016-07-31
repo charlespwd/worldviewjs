@@ -16,19 +16,25 @@ var world = document.getElementById('world')
 
 // Instantiate your new WorldView
 var view = new WorldView(function render(transformation) {
+  // The render function is called every time the view should be
+  // updated. Since the rendering logic is up to you, you can plug
+  // this transformation in the framework of your choice.
   world.style.transform = transformation.transform
-}, {
-  container: container,
-  world: world,
 })
 
-// Bind some event handlers, etc.
+// Set the container and world sizes
+view.setContainerSize(1000, 100)
+view.setWorldSize(500, 500)
+
+// Bind some event handlers
 container.addEventListener('mousewheel', function(e) {
   view.zoomAtMouse(event.deltaY, {
     pageX: e.pageX,
     pageY: e.pageY,
   })
 })
+
+// We're done!
 ```
 
 ## API
