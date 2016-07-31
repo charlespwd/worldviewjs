@@ -1,3 +1,9 @@
 language: node_js
 node_js:
   - "5.2"
+install:
+  npm install --dev
+script:
+  npm run test:cov
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
