@@ -28,7 +28,7 @@ view.setWorldSize(500, 500)
 
 // Bind some event handlers
 container.addEventListener('mousewheel', function(e) {
-  view.zoomAtMouse(event.deltaY, {
+  view.zoomAtMouse(e.deltaY, {
     pageX: e.pageX,
     pageY: e.pageY,
   })
