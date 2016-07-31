@@ -1,6 +1,7 @@
 import { scaleVector, addVectors, minusVectors } from './utils/vector'
 import { matrixMultiply, matrixSubtract, R } from './utils/matrix'
 import { flow } from './utils/functional'
+
 const pointer = ({ pageX, pageY }) => [pageX, pageY]
 
 export default function WorldView(render/* , opts */) {
@@ -78,9 +79,10 @@ export default function WorldView(render/* , opts */) {
     setContainerDimensions,
     setContainerOrigin,
     setWorldDimensions,
-    transformations,
     transform,
+    transformations,
     zoomTo,
+    zoomToMouse,
   }
 
   function debug() {
@@ -107,10 +109,16 @@ export default function WorldView(render/* , opts */) {
     containerOrigin_document = [x_document, y_document]
   }
 
-  // When zooming at a fixed point in the container
-  function zoomTo(newZoom, e = { pageX: undefined, pageY: undefined }) {
+  function zoomToMouse(newZoom, e = { pageX: undefined, pageY: undefined }) {
     const pointer_world = typeof e.pageX === 'number'
       ? fromDocumentToWorld(pointer(e))
+      : centerContainer_world()
+    return zoomAt(newZoom, pointer_world)
+  }
+
+  function zoomTo(newZoom, pointer_document) {
+    const pointer_world = pointer_document instanceof Array
+      ? fromDocumentToWorld(pointer_document)
       : centerContainer_world()
     return zoomAt(newZoom, pointer_world)
   }
@@ -157,7 +165,6 @@ export default function WorldView(render/* , opts */) {
   }
 
   function panBy(translation_container) {
-
     /// Fixed point pan
     // For {}_i and {}_f denotes initial and final transformation, we have
     //
@@ -170,7 +177,7 @@ export default function WorldView(render/* , opts */) {
     // 4. A translation vector defined in the container coordinate system,
     //   ∆p_c = p_c_f - p_c_i  .. (4)
     // 5. A transformation container->world defined by
-    //   x_w = z*R*x_c + t  .. (5)
+    //   x_w = z*R*x_c + t_c  .. (5)
     //
     // For z is the zoom level, and t the translation vector.
     //
@@ -197,9 +204,29 @@ export default function WorldView(render/* , opts */) {
   function rotateBy(degrees, pivot_container) {
     pivot_container = pivot_container || center_container()
 
+    /// Fixed point rotation
+    // For {}_i and {}_f denotes initial and final transformation, we have
+    //
+    // 1. A constant zoom,
+    //   z = z_i = z_f  .. (1)
+    // 2. A constant pointer position relative to the container,
+    //   p_c = p_c_i = p_c_f  .. (2)
+    // 3. A constant pointer position relative to the world,
+    //   p_w = p_w_i = p_w_f  .. (3)
+    // 4. A rotation matrix defined by an angle theta
+    //   R = R(theta)
+    // 5. A transformation container->world defined by
+    //   x_w = z*R*x_c + t_c  .. (4)
+    //
+    // For z is the zoom level, and t the translation vector.
+    //
+    // From (1), (2), (3), and (5) together we get
+    //   p_w = z*R_i*p_c + t_c_i  .. (6)
+    //   p_w = z*R_f*p_c + t_c_f  .. (7)
+    //
+    // Finally, from (4), (6) and (7), we obtain
+    //   t_c_f = z*(R(theta_i) - R(theta_f))*p_c + t_c_i
     const DR = matrixSubtract(R(theta), R(theta + degrees))
-
-    // t_c_f = z * (R_i - R_f) * x_c + t_c_i
     worldOrigin_container = addVectors(
       scaleVector(
         zoom,
