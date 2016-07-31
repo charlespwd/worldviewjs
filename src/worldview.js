@@ -214,9 +214,9 @@ export default function WorldView(render/* , opts */) {
     // 3. A constant pointer position relative to the world,
     //   p_w = p_w_i = p_w_f  .. (3)
     // 4. A rotation matrix defined by an angle theta
-    //   R = R(theta)
+    //   R = R(theta)  .. (4)
     // 5. A transformation container->world defined by
-    //   x_w = z*R*x_c + t_c  .. (4)
+    //   x_w = z*R*x_c + t_c  .. (5)
     //
     // For z is the zoom level, and t the translation vector.
     //

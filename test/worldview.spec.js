@@ -1,4 +1,4 @@
-import WorldView from '../src'
+import WorldView from '../src/worldview'
 import { minusVectors } from '../src/utils/vector'
 import { expect } from 'chai'
 import sinon from 'sinon'
