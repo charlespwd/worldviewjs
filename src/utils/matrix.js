@@ -1,6 +1,8 @@
 const PI = Math.PI
 const sin = (degrees) => Math.sin(degrees / 180 * PI)
 const cos = (degrees) => Math.cos(degrees / 180 * PI)
+const isVector = (x) => x instanceof Array && typeof x[0] === 'number'
+const isMatrix = (x) => x instanceof Array && x[0] instanceof Array && typeof x[0][0] === 'number'
 
 const ops = {
   '+': (a, b) => a + b,
@@ -15,15 +17,29 @@ export const R = (theta) => [
   [sin(theta),  cos(theta)],
 ]
 
-export const matrixMultiply = (matrix, vector) => [
-  matrix[0][0] * vector[0] + matrix[0][1] * vector[1],
-  matrix[1][0] * vector[0] + matrix[1][1] * vector[1],
-]
+export const product = (A, B) => {
+  if (isVector(B)) {
+    return [
+      A[0][0] * B[0] + A[0][1] * B[1],
+      A[1][0] * B[0] + A[1][1] * B[1],
+    ]
+  } else if (isMatrix(B)) {
+    const result = [[undefined, undefined], [undefined, undefined]]
+    return result.map((_, i) => result.map((__, j) => A[i][0] * B[0][j] + A[i][1] * B[1][j]))
+  }
+  throw new Error('What are you trying to do?')
+}
 
 const matrixOperation = (A, B, op) => [
   [op(A[0][0], B[0][0]), op(A[0][1], B[0][1])],
   [op(A[1][0], B[1][0]), op(A[1][1], B[1][1])],
 ]
 
-export const matrixSubtract = (A, B) => matrixOperation(A, B, ops['-'])
-export const matrixAdd = (A, B) => matrixOperation(A, B, ops['+'])
+export const sub = (A, B) => matrixOperation(A, B, ops['-'])
+export const add = (A, B) => matrixOperation(A, B, ops['+'])
+
+export default {
+  product,
+  add,
+  sub,
+}

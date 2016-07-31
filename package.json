@@ -9,7 +9,7 @@
     "build:umd": "webpack src/index.js dist/worldview.js && NODE_ENV=production webpack src/index.js dist/worldview.min.js",
     "lint": "eslint src test",
     "test": "NODE_ENV=test mocha",
-    "test:watch": "NODE_ENV=test multi='mocha-osx-reporter=- spec=-' mocha --watch",
+    "test:watch": "NODE_ENV=test multi='mocha-osx-reporter=- dot=-' mocha --watch",
     "test:cov": "babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha",
     "prepublish": "npm run lint && npm run test && npm run clean && npm run build && npm run build:umd"
   },
@@ -32,6 +32,7 @@
     "babel-eslint": "^3.1.15",
     "babel-loader": "^5.1.4",
     "chai": "^3.5.0",
+    "chai-stats": "^0.3.0",
     "eslint": "^2.9.0",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-config-airbnb-base": "^3.0.1",
