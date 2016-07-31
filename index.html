@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Test</title>
+    <script src="./dist/worldview.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css" media="screen">
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #ruler {
+        width: 1000px;
+        height: 1000px;
+        position: absolute;
+        top: 50px;
+        left: 50px;
+        z-index: -1;
+      }
+
+      #container {
+        background-color: gray;
+        opacity: 0.5;
+        width: 1000px;
+        height: 1000px;
+        margin-left: 50px;
+        margin-top: 50px;
+      }
+
+      #world {
+        border: 1px solid blue;
+        width: 500px;
+        height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="container" class="container">
+      <div style="border: 1px solid black; width: 500px; height: 500px">
+      <svg id="world" width="500" height="500">
+        <rect width="100" height="100"></rect>
+        <rect width="15" height="15" fill="yellow"></rect>
+      </svg>
+    </div>
+
+    <svg id="ruler">
+      <g id="horizontal"></g>
+      <g id="vertical" transform="translate(1000, 0) rotate(-90)"></g>
+    </svg>
+
+    <script type="text/javascript" charset="utf-8">
+      document.onready = (function(global) {
+        var container = document.getElementById('container')
+        var node = document.getElementById('world')
+
+        function render({ transform }) {
+          node.style.transform = transform
+        }
+
+        var view = new worldviewjs(render);
+        view.debug.setContainerSize(1000, 1000)
+        view.debug.setWorldSize(500, 500)
+        view.debug.setContainerOrigin(50, 50)
+        global.view = view;
+
+        container.addEventListener('mousewheel', function(e) {
+          e.preventDefault();
+          view.zoomAtMouse(e.deltaY, e)
+        })
+
+        var ruler = document.getElementById('ruler');
+        var horizontal = document.getElementById('horizontal');
+        var vertical = document.getElementById('vertical');
+        const svgns = "http://www.w3.org/2000/svg";
+        for (var n of [horizontal, vertical]) {
+          for (var i = 0; i <= 10; i++) {
+            var rect = document.createElementNS(svgns, 'rect');
+            rect.setAttributeNS(null, 'x', i * 100);
+            rect.setAttributeNS(null, 'height', '50');
+            rect.setAttributeNS(null, 'width', '1');
+            n.appendChild(rect)
+          }
+        }
+
+        global.reset = function() {
+          view.debug.setWorldOrigin(0, 0)
+          render(view.debug.decorate(view.debug.transform()))
+        }
+      })(this)
+    </script>
+  </body>
+</html>
