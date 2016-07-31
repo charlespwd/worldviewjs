@@ -29,7 +29,7 @@ module.exports = {
     }]
   },
   output: {
-    library: 'worldview.js',
+    library: 'worldviewjs',
     libraryTarget: 'umd'
   },
   plugins: plugins,

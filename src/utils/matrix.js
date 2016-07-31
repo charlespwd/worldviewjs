@@ -17,6 +17,8 @@ export const R = (theta) => [
   [sin(theta),  cos(theta)],
 ]
 
+export const scale = (k, A) => A.map(row => row.map(elem => k * elem))
+
 export const product = (A, B) => {
   if (isVector(B)) {
     return [
@@ -39,7 +41,9 @@ export const sub = (A, B) => matrixOperation(A, B, ops['-'])
 export const add = (A, B) => matrixOperation(A, B, ops['+'])
 
 export default {
-  product,
+  R,
   add,
+  product,
+  scale,
   sub,
 }

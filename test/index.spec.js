@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
 describe('Module: PublicApi', () => {
-  it('should rn', () => {
+  it('should test nothing', () => {
     expect(true).to.be.true
-  })
+  });
 })
