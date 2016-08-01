@@ -62,7 +62,9 @@ export default function PublicWorldView(render, opts) {
     // library assumes that the origin is located at the top left corner (as it
     // should be). Because SVG does not support the CSS property transform-origin.
     // I prefer to do it the old way and translate my transformations to the
-    // correct origin before doing them, and then placing it back.
+    // correct origin before doing them, and then placing it back. It's a
+    // tricky kind of thing that I wouldn't want my best friend to try to
+    // debug. For developer happiness' sake I'll just handle it for you.
     const transformFromTopLeft = (transform, [cx, cy]) => `
       translate(${-cx}px, ${-cy}px)
       ${transform}
