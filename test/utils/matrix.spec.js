@@ -84,5 +84,11 @@ describe('Module: Matrix', () => {
       expect(product(R(0), R(90))).to.be.almost.eql(R(90))
       expect(product(R(90), R(0))).to.be.almost.eql(R(90))
     });
+
+    it('should throw if arguments do not make sense', () => {
+      expect(() => product(R(90), undefined)).to.throw
+      expect(() => product(undefined, R(90))).to.throw
+      expect(() => product(R(90), 10)).to.throw
+    });
   });
 });

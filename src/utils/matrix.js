@@ -7,8 +7,6 @@ const isMatrix = (x) => x instanceof Array && x[0] instanceof Array && typeof x[
 const ops = {
   '+': (a, b) => a + b,
   '-': (a, b) => a - b,
-  '*': (a, b) => a * b,
-  '/': (a, b) => a / b,
 }
 
 // Rotation Matrix
