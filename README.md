@@ -2,6 +2,7 @@
 
 [![Build
 Status](https://travis-ci.org/charlespwd/worldviewjs.svg?branch=master)](https://travis-ci.org/charlespwd/worldviewjs)
+[![codecov](https://codecov.io/gh/charlespwd/worldviewjs/branch/master/graph/badge.svg)](https://codecov.io/gh/charlespwd/worldviewjs)
 
 WorldViewJS is a tool for turning just about anything into a zoomable/pannable/rotatable map.
 
