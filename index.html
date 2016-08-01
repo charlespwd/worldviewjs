@@ -52,7 +52,7 @@
 
     <svg id="ruler">
       <g id="horizontal"></g>
-      <g id="vertical" transform="translate(1000, 0) rotate(-90)"></g>
+      <g id="vertical" transform="translate(0, 1000) rotate(-90)"></g>
     </svg>
 
     <script type="text/javascript" charset="utf-8">
@@ -71,10 +71,23 @@
         global.view = view;
 
         container.addEventListener('mousewheel', function(e) {
-          e.preventDefault();
+          e.preventDefault()
           view.zoomAtMouse(e.deltaY, e)
         })
 
+        container.addEventListener('mousedown', function(e) {
+          view.panStart(e)
+        })
+
+        document.addEventListener('mouseup', function(e) {
+          view.panEnd(e)
+        })
+
+        document.addEventListener('mousemove', function(e) {
+          view.panMove(e)
+        })
+
+        // Make a ruler for "measuring"
         var ruler = document.getElementById('ruler');
         var horizontal = document.getElementById('horizontal');
         var vertical = document.getElementById('vertical');
