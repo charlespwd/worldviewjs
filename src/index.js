@@ -1,24 +1,60 @@
 import worldView from './worldview';
+import vector from './utils/vector';
 import { center_world } from './centers';
 
 const fromEventToVector = ({ pageX, pageY }) => [pageX, pageY]
 
+const validateEventPosition = (method, e) => {
+  if (typeof e.pageX !== 'number' || typeof e.pageY !== 'number') {
+    throw new Error(
+      `Trying to ${method} without { pageX, pageY }. Check your event handler.`
+    )
+  }
+}
+
 export default function PublicWorldView(render, opts) {
   const view = worldView(render, opts);
+  const state = {
+    isPanning: false,
+    panStart: null,
+    panEnd: null,
+  }
 
   /// Public API
   this.zoomAtMouse = zoomAtMouse
+  this.panStart = panStart
+  this.panMove = panMove
+  this.panEnd = panEnd
   this.debug = {
     decorate,
     ...view,
   }
 
-  function zoomAtMouse(zoom, e = { pageX: undefined, pageY: undefined }) {
-    const change = zoom > 0 ? 0.03 : -0.03; // %
+  function zoomAtMouse(wheelDelta, e = { pageX: undefined, pageY: undefined }) {
+    const change = wheelDelta > 0 ? 0.03 : -0.03; // %
     const pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined
-    const transform = view.zoomBy(change, pointer_document)
-    render(decorate(transform))
-    return transform
+    return publish(view.zoomBy(change, pointer_document))
+  }
+
+  function panStart(e = { pageX: undefined, pageY: undefined }) {
+    validateEventPosition('panStart', e)
+    state.isPanning = true;
+    state.panStart = [ e.pageX, e.pageY ]
+  }
+
+  function panMove(e = { pageX: undefined, pageY: undefined }) {
+    if (!state.isPanning) return;
+    validateEventPosition('panMove', e);
+    state.panEnd = [ e.pageX, e.pageY ]
+    publish(view.panBy(vector.sub(state.panEnd, state.panStart)))
+    state.panStart = state.panEnd
+  }
+
+  function panEnd(e = { pageX: undefined, pageY: undefined }) {
+    if (!state.isPanning) return;
+    validateEventPosition('panEnd', e)
+    state.isPanning = false
+    state.panEnd = [ e.pageX, e.pageY ]
   }
 
   function decorate({ translate, rotate, scale }) {
@@ -46,5 +82,11 @@ export default function PublicWorldView(render, opts) {
         center_world(view.state)
       ),
     }
+  }
+
+  function publish(transformation) {
+    const result = decorate(transformation);
+    render(result)
+    return result;
   }
 }
