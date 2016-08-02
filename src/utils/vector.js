@@ -8,6 +8,7 @@ export const sub = operate(ops['-'])
 export const min = operate(Math.min)
 export const max = operate(Math.max)
 export const bounded = (u, v, w) => min(max(u, v), w)
+export const zero = Object.freeze([0, 0])
 
 export default {
   add,
@@ -16,4 +17,5 @@ export default {
   min,
   scale,
   sub,
+  zero,
 }

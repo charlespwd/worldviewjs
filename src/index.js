@@ -13,7 +13,7 @@ const validateEventPosition = (method, e) => {
 }
 
 export default function PublicWorldView(render, opts) {
-  const view = worldView(render, opts);
+  const view = worldView(opts);
   const state = {
     isPanning: false,
     panStart: null,
@@ -33,7 +33,8 @@ export default function PublicWorldView(render, opts) {
   function zoomAtMouse(wheelDelta, e = { pageX: undefined, pageY: undefined }) {
     const change = wheelDelta > 0 ? 0.03 : -0.03; // %
     const pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined
-    return publish(view.zoomBy(change, pointer_document))
+    view.zoomBy(change, pointer_document)
+    publish()
   }
 
   function panStart(e = { pageX: undefined, pageY: undefined }) {
@@ -46,8 +47,9 @@ export default function PublicWorldView(render, opts) {
     if (!state.isPanning) return;
     validateEventPosition('panMove', e);
     state.panEnd = [ e.pageX, e.pageY ]
-    publish(view.panBy(vector.sub(state.panEnd, state.panStart)))
+    view.panBy(vector.sub(state.panEnd, state.panStart))
     state.panStart = state.panEnd
+    publish()
   }
 
   function panEnd(e = { pageX: undefined, pageY: undefined }) {
@@ -86,8 +88,8 @@ export default function PublicWorldView(render, opts) {
     }
   }
 
-  function publish(transformation) {
-    const result = decorate(transformation);
+  function publish() {
+    const result = decorate(view.transform);
     render(result)
     return result;
   }

@@ -1,4 +1,4 @@
-import { sin, cos, ops, PI } from './math'
+import { sin, cos, ops } from './math'
 
 const isVector = (x) => x instanceof Array && typeof x[0] === 'number'
 const isMatrix = (x) => x instanceof Array && x[0] instanceof Array && typeof x[0][0] === 'number'

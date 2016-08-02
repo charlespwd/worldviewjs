@@ -67,14 +67,14 @@ export default function WorldView(/* opts */) {
 
   function zoomBy(change = 0, pointer_document) {
     const newZoom = state.zoom * (1 + change);
-    return zoomTo(newZoom, pointer_document);
+    zoomTo(newZoom, pointer_document);
   }
 
   function zoomTo(newZoom, pointer_document) {
     const pointer_container = pointer_document instanceof Array
       ? fromDocumentToContainer(state, pointer_document)
       : center_container(state)
-    return zoomAt(newZoom, pointer_container)
+    zoomAt(newZoom, pointer_container)
   }
 
   /// Fixed point zoom
@@ -116,8 +116,6 @@ export default function WorldView(/* opts */) {
     )
 
     state.zoom = newZoom
-
-    return transform()
   }
 
   /// Fixed point pan
@@ -150,8 +148,6 @@ export default function WorldView(/* opts */) {
       translation_container,
       state.worldOrigin_container
     )
-
-    return transform()
   }
 
   /// Fixed point rotation
@@ -188,8 +184,6 @@ export default function WorldView(/* opts */) {
     )
 
     state.theta = state.theta + degrees
-
-    return transform()
   }
 
   function transform() {

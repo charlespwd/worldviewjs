@@ -23,7 +23,8 @@ describe('Module: WorldView', () => {
     it('should have constant rotation', () => {
       const theta_i = 45
       view.setTheta(theta_i)
-      const { rotate: theta_f } = view.zoomTo(2, [25, 25])
+      view.zoomTo(2, [25, 25])
+      const { rotate: theta_f } = view.transform
       expect(theta_f).to.be.eql(theta_i)
     })
 
@@ -46,17 +47,20 @@ describe('Module: WorldView', () => {
     it('should render the transformation respective to container', () => {
       view.setContainerOrigin(200, 200)
       // offset by -50, -50, origin should be at 150, 150
-      transform = view.zoomTo(2, [250, 250])
+      view.zoomTo(2, [250, 250])
+      transform = view.transform
       expect(transform.translate).to.be.eql([-50, -50])
       expect(transform.scale).to.be.eql(2)
 
-      transform = view.zoomTo(3, [250, 250]) // should still be at center
+      view.zoomTo(3, [250, 250]) // should still be at center
+      transform = view.transform
       expect(transform.translate).to.be.eql([-100, -100])
       expect(transform.scale).to.be.eql(3)
     })
 
     it('should zoom about the origin correctly', () => {
-      transform = view.zoomTo(2, [0, 0])
+      view.zoomTo(2, [0, 0])
+      transform = view.transform
       expect(transform.translate).to.be.eql([ 0, 0 ])
       expect(transform.scale).to.be.eql(2)
       expect(fromContainerToWorld(view.state, [50, 50])).to.be.eql([25, 25])
@@ -66,7 +70,8 @@ describe('Module: WorldView', () => {
     })
 
     it('should zoom offset correctly', () => {
-      transform = view.zoomTo(2, [50, 0])
+      view.zoomTo(2, [50, 0])
+      transform = view.transform
       expect(transform.translate).to.be.eql([ -50, 0 ])
       expect(transform.scale).to.be.eql(2)
     })
@@ -82,20 +87,23 @@ describe('Module: WorldView', () => {
     })
 
     it('should do nothing when zoom is constant', () => {
-      transform = view.zoomTo(1, [0, 0])
+      view.zoomTo(1, [0, 0])
+      transform = view.transform
       expect(transform.translate).to.be.eql([ 0, 0 ])
       expect(transform.scale).to.be.eql(1)
       expect(transform.rotate).to.be.eql(0)
 
       // even if zoomed from somewhere
-      transform = view.zoomTo(1, [2, 2])
+      view.zoomTo(1, [2, 2])
+      transform = view.transform
       expect(transform.translate).to.be.eql([ 0, 0 ])
       expect(transform.scale).to.be.eql(1)
       expect(transform.rotate).to.be.eql(0)
     })
 
     it('should zoom about the midpoint of the container by default', () => {
-      transform = view.zoomTo(2)
+      view.zoomTo(2)
+      transform = view.transform
       expect(transform.translate).to.be.eql([ -50, -50 ])
       expect(transform.scale).to.be.eql(2)
     })
@@ -112,14 +120,16 @@ describe('Module: WorldView', () => {
     it('should have a constant rotation', () => {
       const theta_i = 45
       view.setTheta(theta_i)
-      const { rotate: theta_f } = view.panBy([25, 15])
+      view.panBy([25, 15])
+      const { rotate: theta_f } = view.transform
       expect(theta_f).to.be.eql(theta_i)
     })
 
     it('should have a constant zoom', () => {
       const zoom_i = 2
       view.setZoom(2)
-      const { scale: zoom_f } = view.panBy([25, 15])
+      view.panBy([25, 15])
+      const { scale: zoom_f } = view.transform
       expect(zoom_f).to.be.eql(zoom_i)
     })
 
@@ -133,13 +143,16 @@ describe('Module: WorldView', () => {
     })
 
     it('should translate the world with respect to the container', () => {
-      transform = view.panBy([1, 1])
+      view.panBy([1, 1])
+      transform = view.transform
       expect(transform.translate).to.be.eql([1, 1])
-      transform = view.panBy([1, 2])
+      view.panBy([1, 2])
+      transform = view.transform
       expect(transform.translate).to.be.eql([2, 3])
       // setting the origin shouldn'view.transformations do anything
       view.setContainerOrigin([50, 50])
-      transform = view.panBy([1, 1])
+      view.panBy([1, 1])
+      transform = view.transform
       expect(transform.translate).to.be.eql([3, 4])
     })
   })
@@ -148,7 +161,8 @@ describe('Module: WorldView', () => {
     it('should have a constant zoom', () => {
       const zoom_i = 2
       view.setZoom(zoom_i)
-      const { scale: zoom_f } = view.rotateBy(45)
+      view.rotateBy(45)
+      const { scale: zoom_f } = view.transform
       expect(zoom_f).to.be.eql(zoom_i)
     })
 
@@ -171,32 +185,37 @@ describe('Module: WorldView', () => {
     })
 
     it('should rotate about the center', () => {
-      transform = view.rotateBy(90, [50, 50])
+      view.rotateBy(90, [50, 50])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([100, 0])
       expect(transform.rotate).to.eql(90)
       expect(transform.scale).to.eql(1)
     })
 
     it('should rotate about a point', () => {
-      transform = view.rotateBy(90, [100, 100])
+      view.rotateBy(90, [100, 100])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([200, 0])
       expect(transform.rotate).to.eql(90)
       expect(transform.scale).to.eql(1)
       expect(fromContainerToWorld(view.state, [100, 0])).to.almost.eql([0, 100])
 
-      transform = view.rotateBy(90, [100, 100])
+      view.rotateBy(90, [100, 100])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([200, 200])
       expect(transform.rotate).to.eql(180)
       expect(transform.scale).to.eql(1)
       expect(fromContainerToWorld(view.state, [200, 100])).to.almost.eql([0, 100])
 
-      transform = view.rotateBy(90, [100, 100])
+      view.rotateBy(90, [100, 100])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([0, 200])
       expect(transform.rotate).to.eql(270)
       expect(transform.scale).to.eql(1)
       expect(fromContainerToWorld(view.state, [100, 200])).to.almost.eql([0, 100])
 
-      transform = view.rotateBy(90, [100, 100])
+      view.rotateBy(90, [100, 100])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([0, 0])
       expect(transform.rotate).to.eql(360)
       expect(transform.scale).to.eql(1)
@@ -206,25 +225,29 @@ describe('Module: WorldView', () => {
     it('should rotate and hold the zoom correctly', () => {
       view.setZoom(2)
 
-      transform = view.rotateBy(90, [200, 200])
+      view.rotateBy(90, [200, 200])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([400, 0])
       expect(transform.rotate).to.eql(90)
       expect(transform.scale).to.eql(2)
       expect(fromContainerToWorld(view.state, [200, 0])).to.almost.eql([0, 100])
 
-      transform = view.rotateBy(90, [200, 200])
+      view.rotateBy(90, [200, 200])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([400, 400])
       expect(transform.rotate).to.eql(180)
       expect(transform.scale).to.eql(2)
       expect(fromContainerToWorld(view.state, [400, 200])).to.almost.eql([0, 100])
 
-      transform = view.rotateBy(90, [200, 200])
+      view.rotateBy(90, [200, 200])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([0, 400])
       expect(transform.rotate).to.eql(270)
       expect(transform.scale).to.eql(2)
       expect(fromContainerToWorld(view.state, [200, 400])).to.almost.eql([0, 100])
 
-      transform = view.rotateBy(90, [200, 200])
+      view.rotateBy(90, [200, 200])
+      transform = view.transform
       expect(transform.translate).to.almost.eql([0, 0])
       expect(transform.rotate).to.eql(360)
       expect(transform.scale).to.eql(2)
@@ -232,7 +255,8 @@ describe('Module: WorldView', () => {
     })
 
     it('should not rotate when degrees == 0', () => {
-      transform = view.rotateBy(0, [0, 0])
+      view.rotateBy(0, [0, 0])
+      transform = view.transform
       expect(transform.translate).to.be.eql([0, 0])
       expect(transform.rotate).to.eql(0)
       expect(transform.scale).to.eql(1)
