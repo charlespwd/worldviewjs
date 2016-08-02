@@ -1,13 +1,7 @@
-const PI = Math.PI
-const sin = (degrees) => Math.sin(degrees / 180 * PI)
-const cos = (degrees) => Math.cos(degrees / 180 * PI)
+import { sin, cos, ops, PI } from './math'
+
 const isVector = (x) => x instanceof Array && typeof x[0] === 'number'
 const isMatrix = (x) => x instanceof Array && x[0] instanceof Array && typeof x[0][0] === 'number'
-
-const ops = {
-  '+': (a, b) => a + b,
-  '-': (a, b) => a - b,
-}
 
 // Rotation Matrix
 export const R = (theta) => [
