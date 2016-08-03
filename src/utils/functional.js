@@ -5,3 +5,8 @@ export const flow = (...args) => x => {
   }
   return x
 }
+
+export const setState = (state, key, value) => ({
+  ...state,
+  [key]: value,
+})

@@ -4,7 +4,7 @@ import {
   fromContainerToWorld,
   fromWorldToContainer,
   fromWorldToDocument,
-} from './transformations'
+} from './transform-vector'
 
 /// Various centers
 export const center_world = (state) => vector.scale(1 / 2, state.worldSize)

@@ -5,7 +5,7 @@ import {
   fromDocumentToWorld,
   fromWorldToContainer,
   fromWorldToDocument,
-} from '../src/transformations';
+} from '../src/transform-vector';
 import { flow } from '../src/utils/functional'
 import { expect } from 'chai'
 
@@ -15,8 +15,8 @@ describe('Module: Transformations', () => {
     state = {
       zoom: 1,
       theta: 0,
-      worldOrigin_container: [0, 0],
-      containerOrigin_document: [0, 0],
+      world_container: [0, 0],
+      container_document: [0, 0],
       worldSize: [100, 100],
       containerSize: [100, 100],
     }
@@ -26,8 +26,8 @@ describe('Module: Transformations', () => {
     it('should be the inverse of each other', () => {
       state.zoom = 2
       state.theta = 150
-      state.worldOrigin_container = [158, 23]
-      state.containerOrigin_document = [40, 2]
+      state.world_container = [158, 23]
+      state.container_document = [40, 2]
       const aToB = flow(
         fromDocumentToContainer.bind(null, state),
         fromContainerToDocument.bind(null, state)
@@ -42,7 +42,7 @@ describe('Module: Transformations', () => {
 
     it('should offset the container origin', () => {
       expect(fromDocumentToContainer(state, [1, 1])).to.eql([1, 1])
-      state.containerOrigin_document = [1, 1]
+      state.container_document = [1, 1]
       expect(fromDocumentToContainer(state, [1, 1])).to.eql([0, 0])
     })
 
@@ -62,7 +62,7 @@ describe('Module: Transformations', () => {
   describe('Unit: fromWorldToContainer, fromContainerToWorld', () => {
     it('should not depend on the container origin', () => {
       expect(fromWorldToContainer(state, [50, 50])).to.eql([50, 50])
-      state.containerOrigin_document = [1, 1]
+      state.container_document = [1, 1]
       expect(fromWorldToContainer(state, [50, 50])).to.eql([50, 50])
     })
 
@@ -82,7 +82,7 @@ describe('Module: Transformations', () => {
     })
 
     it('should depend on the world origin relative to the container', () => {
-      state.worldOrigin_container = [1, 1]
+      state.world_container = [1, 1]
       expect(fromWorldToContainer(state, [0, 0])).to.almost.eql([1, 1])
       expect(fromWorldToContainer(state, [1, 1])).to.almost.eql([2, 2])
       expect(fromWorldToContainer(state, [10, 0])).to.almost.eql([11, 1])
@@ -91,8 +91,8 @@ describe('Module: Transformations', () => {
     it('should be the inverse of each other', () => {
       state.zoom = 2
       state.theta = 150
-      state.worldOrigin_container = [158, 23]
-      state.containerOrigin_document = [40, 2]
+      state.world_container = [158, 23]
+      state.container_document = [40, 2]
       const aToB = flow(
         fromWorldToContainer.bind(null, state),
         fromContainerToWorld.bind(null, state)
@@ -110,8 +110,8 @@ describe('Module: Transformations', () => {
     it('should be the inverse of each other', () => {
       state.zoom = 2
       state.theta = 150
-      state.worldOrigin_container = [158, 23]
-      state.containerOrigin_document = [40, 2]
+      state.world_container = [158, 23]
+      state.container_document = [40, 2]
       const aToB = flow(
         fromWorldToDocument.bind(null, state),
         fromDocumentToWorld.bind(null, state)
@@ -127,8 +127,8 @@ describe('Module: Transformations', () => {
     it('should be the composition of the other two transformations', () => {
       state.zoom = 2
       state.theta = 150
-      state.worldOrigin_container = [158, 23]
-      state.containerOrigin_document = [24, 42]
+      state.world_container = [158, 23]
+      state.container_document = [24, 42]
       expect(fromWorldToDocument(state, [1, 2])).to.eql(
         fromContainerToDocument(state, fromWorldToContainer(state, [1, 2]))
       )
