@@ -6,10 +6,9 @@ describe('Module: WorldView', () => {
   let transform
 
   beforeEach(() => {
-    view = new WorldView({
-      worldSize: [100, 100],
-      containerSize: [100, 100],
-    })
+    view = new WorldView()
+    view.setContainerSize(100, 100)
+    view.setWorldSize(100, 100)
     transform = undefined
   })
 
@@ -129,14 +128,31 @@ describe('Module: WorldView', () => {
     });
   });
 
+  describe('Unit: resetContainerSize', () => {
+    it('should maintain the viewbox', () => {
+      // setup, the view box shows the world in the top right quadrant
+      view.setWorldSize(1, 1)
+      view.setWorldOrigin(1, 0) // offset by half the viewport
+      view.setContainerSize(2, 2)
+
+      // execute
+      view.resetContainerSize(4, 4)
+
+      // test
+      expect(view.state.containerSize).to.be.eql([4, 4])
+      expect(view.state.worldSize).to.be.eql([1, 1])
+      expect(view.state.zoom).to.be.eql(2)
+      expect(view.state.world_container).to.be.eql([2, 0])
+    });
+  });
+
   describe('With options.fit', () => {
     beforeEach(() => {
       view = new WorldView({
-        containerSize: [100, 100],
-        worldSize: [50, 50],
-      }, {
         fit: true,
       })
+      view.setWorldSize(50, 50)
+      view.setContainerSize(100, 100)
       transform = undefined
     })
 

@@ -11,7 +11,7 @@ import {
   statelessZoom,
 } from './transform-world'
 
-export default function WorldView(initialState, opts) {
+export default function WorldView(opts) {
   /// State
   let state = {
     // scale level
@@ -31,10 +31,9 @@ export default function WorldView(initialState, opts) {
 
     // The size of the container (viewport)
     containerSize: [1, 1],
-
-    ...initialState,
   }
 
+  /// Options
   const options = {
     // Fit the world to the container when zooming and panning
     fit: false,
@@ -42,14 +41,18 @@ export default function WorldView(initialState, opts) {
     ...opts,
   }
 
-  if (options.fit) {
-    state = fit(state)
-  }
-
   /// Public API
   return {
-    get state() { return state },
-    get transform() { return transform() },
+    get state() {
+      return state
+    },
+    get transform() {
+      return {
+        translate: state.world_container,
+        rotate: state.theta,
+        scale: state.zoom,
+      }
+    },
     panBy,
     rotateBy,
     setContainerSize,
@@ -58,20 +61,14 @@ export default function WorldView(initialState, opts) {
     setWorldOrigin,
     setZoom,
     setTheta,
+    resetContainerSize,
     zoomTo,
     zoomBy,
   }
 
-  function withFit(transformation) {
-    return [
-      transformation,
-      options.fit ? fit : identity,
-    ];
-  }
-
   function setWorldSize(width, height) {
     const transformations = withFit(set('worldSize', [width, height]))
-    state = reduce(transformations, state);
+    state = reduce(transformations, state)
   }
 
   function setContainerSize(width, height) {
@@ -97,11 +94,24 @@ export default function WorldView(initialState, opts) {
     state = reduce(transformations, state)
   }
 
+  // Change the container size but keep what you see in the view the same.
+  // Use this to keep things responsive.
+  function resetContainerSize(width, height) {
+    const change = width / state.containerSize[0]
+    const transformations = [
+      statelessZoom(change * state.zoom, [0, 0]),
+      set('containerSize', [width, height]),
+    ]
+    state = reduce(transformations, state)
+  }
+
+  // Zoom by a percent change at a point in the document
   function zoomBy(change = 0, pointer_document) {
     const newZoom = state.zoom * (1 + change)
     zoomTo(newZoom, pointer_document)
   }
 
+  // Zoom to a set value at a point in the document
   function zoomTo(newZoom, pointer_document) {
     const pointer_container = pointer_document instanceof Array
       ? fromDocumentToContainer(state, pointer_document)
@@ -110,22 +120,26 @@ export default function WorldView(initialState, opts) {
     state = reduce(transformations, state)
   }
 
-  function panBy(translation_container) {
-    const transformations = withFit(statelessPanBy(translation_container))
+  // Pan by a translation vector
+  function panBy(translation_document) {
+    const transformations = withFit(statelessPanBy(translation_document))
     state = reduce(transformations, state)
   }
 
-  function rotateBy(degrees, pivot_container) {
-    pivot_container = pivot_container || center_container(state)
+  // Rotate by amount of degrees at a pivot position in the document
+  function rotateBy(degrees, pivot_document) {
+    const pivot_container = pivot_document instanceof Array
+      ? fromDocumentToContainer(state, pivot_document)
+      : center_container(state)
     const transformation = statelessRotateBy(degrees, pivot_container)
     state = transformation(state)
   }
 
-  function transform() {
-    return {
-      translate: state.world_container,
-      rotate: state.theta,
-      scale: state.zoom,
-    }
+  // Wrap a transformation with an optional fit to the size of the world.
+  function withFit(transformations) {
+    return [].concat(
+      transformations,
+      options.fit ? fit : identity
+    )
   }
 }

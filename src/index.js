@@ -1,6 +1,6 @@
-import worldView from './worldview';
-import vector from './utils/vector';
-import { center_world } from './centers';
+import worldView from './worldview'
+import vector from './utils/vector'
+import { center_world } from './centers'
 
 const fromEventToVector = ({ pageX, pageY }) => [pageX, pageY]
 
@@ -12,8 +12,8 @@ const validateEventPosition = (method, e) => {
   }
 }
 
-export default function PublicWorldView(render, initialState, opts) {
-  const view = worldView(initialState, opts);
+export default function PublicWorldView(render, opts) {
+  const view = worldView(opts)
   const state = {
     isPanning: false,
     panStart: null,
@@ -25,16 +25,26 @@ export default function PublicWorldView(render, initialState, opts) {
   this.panStart = panStart
   this.panMove = panMove
   this.panEnd = panEnd
+  this.setDimensions = setDimensions
+  this.resetContainerSize = resetContainerSize
   this.debug = {
     decorate,
     ...view,
   }
 
-  // initial render (after fitting, etc.)
-  publish()
+  function setDimensions(worldWidth, worldHeight, containerWidth, containerHeight) {
+    view.setWorldSize(worldWidth, worldHeight)
+    view.setContainerSize(containerWidth, containerHeight)
+    publish()
+  }
+
+  function resetContainerSize(containerWidth, containerHeight) {
+    view.resetContainerSize(containerWidth, containerHeight)
+    publish()
+  }
 
   function zoomAtMouse(wheelDelta, e = { pageX: undefined, pageY: undefined }) {
-    const change = wheelDelta > 0 ? 0.03 : -0.03; // %
+    const change = wheelDelta > 0 ? 0.03 : -0.03 // %
     const pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined
     view.zoomBy(change, pointer_document)
     publish()
@@ -42,13 +52,13 @@ export default function PublicWorldView(render, initialState, opts) {
 
   function panStart(e = { pageX: undefined, pageY: undefined }) {
     validateEventPosition('panStart', e)
-    state.isPanning = true;
+    state.isPanning = true
     state.panStart = [ e.pageX, e.pageY ]
   }
 
   function panMove(e = { pageX: undefined, pageY: undefined }) {
-    if (!state.isPanning) return;
-    validateEventPosition('panMove', e);
+    if (!state.isPanning) return
+    validateEventPosition('panMove', e)
     state.panEnd = [ e.pageX, e.pageY ]
     view.panBy(vector.sub(state.panEnd, state.panStart))
     state.panStart = state.panEnd
@@ -56,7 +66,7 @@ export default function PublicWorldView(render, initialState, opts) {
   }
 
   function panEnd(e = { pageX: undefined, pageY: undefined }) {
-    if (!state.isPanning) return;
+    if (!state.isPanning) return
     validateEventPosition('panEnd', e)
     state.isPanning = false
     state.panEnd = [ e.pageX, e.pageY ]
@@ -92,8 +102,8 @@ export default function PublicWorldView(render, initialState, opts) {
   }
 
   function publish() {
-    const result = decorate(view.transform);
+    const result = decorate(view.transform)
     render(result)
-    return result;
+    return result
   }
 }
