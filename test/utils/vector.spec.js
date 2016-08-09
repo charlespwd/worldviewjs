@@ -50,7 +50,7 @@ describe('Module: vector', () => {
       expect(vector.norm(vector.normalize([0, 5]))).to.eql(1)
     });
 
-    it('should be possible to recover the initial vector after scaling a normalized vector by the norm', () => {
+    it('should recover the initial vector after scaling a normalized vector by the norm', () => {
       const initialVector = [3, 4];
       const norm = 5
       expect(vector.scale(norm, vector.normalize(initialVector))).to.almost.eql(initialVector)

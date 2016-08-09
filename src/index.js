@@ -12,8 +12,8 @@ const validateEventPosition = (method, e) => {
   }
 }
 
-export default function PublicWorldView(render, opts) {
-  const view = worldView(opts);
+export default function PublicWorldView(render, initialState, opts) {
+  const view = worldView(initialState, opts);
   const state = {
     isPanning: false,
     panStart: null,
@@ -29,6 +29,9 @@ export default function PublicWorldView(render, opts) {
     decorate,
     ...view,
   }
+
+  // initial render (after fitting, etc.)
+  publish()
 
   function zoomAtMouse(wheelDelta, e = { pageX: undefined, pageY: undefined }) {
     const change = wheelDelta > 0 ? 0.03 : -0.03; // %

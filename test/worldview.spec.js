@@ -6,9 +6,10 @@ describe('Module: WorldView', () => {
   let transform
 
   beforeEach(() => {
-    view = new WorldView()
-    view.setWorldSize(100, 100)
-    view.setContainerSize(100, 100)
+    view = new WorldView({
+      worldSize: [100, 100],
+      containerSize: [100, 100],
+    })
     transform = undefined
   })
 
@@ -125,6 +126,63 @@ describe('Module: WorldView', () => {
       expect(view.transform.scale).to.eql(1);
       expect(view.transform.rotate).to.eql(0);
       expect(view.transform.translate).to.eql([0, 0]);
+    });
+  });
+
+  describe('With options.fit', () => {
+    beforeEach(() => {
+      view = new WorldView({
+        containerSize: [100, 100],
+        worldSize: [50, 50],
+      }, {
+        fit: true,
+      })
+      transform = undefined
+    })
+
+    it('should fit', () => {
+      expect(view.state.zoom).to.be.eql(2);
+    });
+
+    it('should not let you unzoom past the limit', () => {
+      view.zoomTo(1)
+      expect(view.state.zoom).to.be.eql(2);
+      view.zoomTo(3)
+      expect(view.state.zoom).to.be.eql(3);
+    });
+
+    it('should not allow to pan at zoom = zoomlimit', () => {
+      const initialPan = view.state.world_container
+      view.panBy([1, 1])
+      expect(view.state.world_container).to.be.eql(initialPan);
+      view.panBy([-1, -1])
+      expect(view.state.world_container).to.be.eql(initialPan);
+    });
+
+    it('should allow you to pan within limits after zooming in', () => {
+      view.zoomBy(1) // now world is twice as big as container
+      view.setWorldOrigin(0, 0) // start at 0,0
+      expect(view.state.world_container).to.be.eql([0, 0]);
+
+      // Testing right limit
+      view.panBy([1, 1]) // shouldn't be able to do this
+      expect(view.state.world_container).to.be.eql([0, 0]);
+
+      // Testing you can pan within the domain
+      view.panBy([-1, -1]) // should be able to do this
+      expect(view.state.world_container).to.be.eql([-1, -1]);
+      view.setWorldOrigin(0, 0) // reset at 0,0
+
+      // Testing you'll reach the limit at some point and max out there.
+      view.panBy([-10000, -10000]) // should limit you to the max pan
+      expect(view.state.world_container).to.be.eql([-100, -100]);
+      view.setWorldOrigin(0, 0) // reset at 0,0
+    });
+
+    it('should not allow you to set world_document outside of domain', () => {
+      view.zoomBy(1) // now world is twice as big as container
+      view.setWorldOrigin(-10000, -10000) // should limit you to the max pan
+      expect(view.state.world_container).to.be.eql([-100, -100]);
     });
   });
 })
