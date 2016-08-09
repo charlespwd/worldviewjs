@@ -35,4 +35,25 @@ describe('Module: vector', () => {
       expect(vector.bounded(min, [-2, -2], max)).to.be.eql([-1, -1])
     });
   });
+
+  describe('Unit: norm', () => {
+    it('should return the norm of the vector', () => {
+      expect(vector.norm([0, 0])).to.eql(0)
+      expect(vector.norm([1, 0])).to.eql(1)
+      expect(vector.norm([3, 4])).to.eql(5)
+      expect(vector.norm([-3, -4])).to.eql(5)
+    });
+  });
+
+  describe('Unit: normalize', () => {
+    it('should return the a vector of unit norm', () => {
+      expect(vector.norm(vector.normalize([0, 5]))).to.eql(1)
+    });
+
+    it('should be possible to recover the initial vector after scaling a normalized vector by the norm', () => {
+      const initialVector = [3, 4];
+      const norm = 5
+      expect(vector.scale(norm, vector.normalize(initialVector))).to.almost.eql(initialVector)
+    });
+  });
 })
