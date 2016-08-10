@@ -27,8 +27,7 @@ var view = new WorldView(function render(transformation) {
 })
 
 // Set the container and world sizes
-view.setContainerSize(1000, 100)
-view.setWorldSize(500, 500)
+view.setDimensions(500, 500, 1000, 100)
 
 // Bind some event handlers
 container.addEventListener('mousewheel', function(e) {
