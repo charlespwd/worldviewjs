@@ -73,12 +73,10 @@
         }
 
         var view = new worldviewjs(render, {
-          containerSize: [1000, 1000],
-          worldSize: [1000, 500],
-        }, {
           fit: true,
         });
-        view.debug.setContainerOrigin(50, 50)
+        view.setContainerOrigin(50, 50)
+        view.setDimensions(1000, 500, 1000, 1000)
         global.view = view;
 
         container.addEventListener('mousewheel', function(e) {
