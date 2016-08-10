@@ -27,6 +27,7 @@ export default function PublicWorldView(render, opts) {
   this.panEnd = panEnd
   this.setDimensions = setDimensions
   this.resetContainerSize = resetContainerSize
+  this.setContainerOrigin = view.setContainerOrigin
   this.debug = {
     decorate,
     ...view,
