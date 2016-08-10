@@ -12,6 +12,7 @@ describe('Module: PublicApi', () => {
   beforeEach(() => {
     mockery.enable({
       warnOnReplace: false,
+      warnOnUnregisted: false,
     })
 
     wvMock = {
