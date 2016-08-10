@@ -11,7 +11,8 @@
     "test": "NODE_ENV=test multi='spec=-' mocha",
     "test:watch": "NODE_ENV=test multi='mocha-osx-reporter=- dot=-' mocha --watch",
     "test:cov": "multi='mocha-osx-reporter=- dot=-' babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha",
-    "prepublish": "npm run lint && npm run test && npm run clean && npm run build && npm run build:umd"
+    "prepublish": "npm run lint && npm run test && npm run clean && npm run build && npm run build:umd",
+    "precommit": "npm run lint && npm run test"
   },
   "repository": {
     "type": "git",
@@ -41,6 +42,7 @@
     "eslint-plugin-jsx-a11y": "^1.5.5",
     "eslint-plugin-react": "^5.2.2",
     "expect": "^1.6.0",
+    "husky": "^0.11.6",
     "isparta": "^3.0.3",
     "mocha": "^2.2.5",
     "mocha-multi": "^0.9.0",
