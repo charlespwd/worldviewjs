@@ -25,7 +25,7 @@ export const reduce = (transforms = [], initialState) => (
 // 4. A transformation world->container defined by
 //   x_w = 1/z*R^-1*(x_c - t_c) .. (4)
 //
-// For z is the zoom level, and t the translation vector.
+// For z is the scale level, and t the translation vector.
 //
 // From (1), (2), (3) and (4) together we get
 //   p_c = 1/z_i*R^-1*(p_c - t_c_i)  .. (5)
@@ -40,7 +40,7 @@ export const reduce = (transforms = [], initialState) => (
 // And finally
 //   t_c_f = p_c + z_f / z_i * (t_c_i - p_c)
 export const statelessZoom = (zoom_f, pointer_container) => (state) => {
-  const zoom_i = state.zoom
+  const zoom_i = state.scale
   const world_container_i = state.world_container
   const world_container_f = vector.add(
     pointer_container,
@@ -56,7 +56,7 @@ export const statelessZoom = (zoom_f, pointer_container) => (state) => {
   return {
     ...state,
     world_container: world_container_f,
-    zoom: zoom_f,
+    scale: zoom_f,
   }
 }
 
@@ -74,7 +74,7 @@ export const statelessZoom = (zoom_f, pointer_container) => (state) => {
 // 5. A transformation container->world defined by
 //   x_w = 1/z*R^-1*(x_c - t_c) .. (4)
 //
-// For z is the zoom level, and t the translation vector.
+// For z is the scale level, and t the translation vector.
 //
 // From (1), (2), (3), and (5) together we get
 //   p_c_i = z*R*p_w + t_c_i  .. (6)
@@ -141,13 +141,13 @@ export const statelessRotateBy = (degrees, pivot_container = [0, 0]) => (state) 
 }
 
 // # Fitting to the container
-// We have two limits, the first one is on the zoom, the second one is on the
+// We have two limits, the first one is on the scale, the second one is on the
 // translation vector.
 //
 // The Goal: Any points visible within the container are points within the
 // world.
 //
-// ## Part 1, the zoom limit
+// ## Part 1, the scale limit
 //
 // We have
 // 1. The size of the world
@@ -159,7 +159,7 @@ export const statelessRotateBy = (degrees, pivot_container = [0, 0]) => (state) 
 // 4. From (3) and (1)
 //      W_c = z*W_w
 //
-// for z is the zoom, t_c the translation vector, wlimit the vector pointing to
+// for z is the scale, t_c the translation vector, wlimit the vector pointing to
 // the limiting corner, climit the vector pointing to the corner limit of the
 // container, and 0_x the zero vector.
 //
@@ -207,16 +207,16 @@ export const statelessRotateBy = (degrees, pivot_container = [0, 0]) => (state) 
 //   C_c - z*W_w <= t_c <= 0
 export const fit = (state) => {
   const { worldSize, containerSize } = state
-  const zoomlimit_x = containerSize[0] / worldSize[0]
-  const zoomlimit_y = containerSize[1] / worldSize[1]
-  const zoom = Math.max(zoomlimit_x, zoomlimit_y, state.zoom)
+  const scalelimit_x = containerSize[0] / worldSize[0]
+  const scalelimit_y = containerSize[1] / worldSize[1]
+  const scale = Math.max(scalelimit_x, scalelimit_y, state.scale)
   return ({
     ...state,
-    zoom,
+    scale,
     world_container: vector.bounded(
       vector.sub(
         containerSize,
-        vector.scale(zoom, worldSize)
+        vector.scale(scale, worldSize)
       ),
       state.world_container,
       vector.zero

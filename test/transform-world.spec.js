@@ -22,7 +22,7 @@ describe('Module: TransformWorld', () => {
 
   beforeEach(() => {
     state = {
-      zoom: 1,
+      scale: 1,
       theta: 0,
       world_container: [0, 0],
       container_document: [0, 0],
@@ -36,11 +36,11 @@ describe('Module: TransformWorld', () => {
     it('should compose state transformations', () => {
       expect(reduce([
         set('theta', 30),
-        set('zoom', 2),
+        set('scale', 2),
       ], state)).to.eql({
         ...state,
         theta: 30,
-        zoom: 2,
+        scale: 2,
       })
     });
 
@@ -87,7 +87,7 @@ describe('Module: TransformWorld', () => {
       transform = statelessZoom(2, [0, 0])
       newState = transform(state)
       expect(newState.world_container).to.be.eql([ 0, 0 ])
-      expect(newState.zoom).to.be.eql(2)
+      expect(newState.scale).to.be.eql(2)
       expect(fromContainerToWorld(newState, [50, 50])).to.be.eql([25, 25])
       expect(fromContainerToWorld(newState, [0, 100])).to.be.eql([0, 50])
       expect(fromContainerToWorld(newState, [100, 0])).to.be.eql([50, 0])
@@ -98,7 +98,7 @@ describe('Module: TransformWorld', () => {
       transform = statelessZoom(2, [50, 0])
       newState = transform(state)
       expect(newState.world_container).to.be.eql([ -50, 0 ])
-      expect(newState.zoom).to.be.eql(2)
+      expect(newState.scale).to.be.eql(2)
     })
 
     it('should do nothing when zoom is constant', () => {
@@ -133,11 +133,11 @@ describe('Module: TransformWorld', () => {
     it('should have a constant zoom', () => {
       const zoom_i = 2
       transforms = [
-        set('zoom', zoom_i),
+        set('scale', zoom_i),
         statelessPanBy([25, 15]),
       ]
       newState = reduce(transforms, state)
-      expect(newState.zoom).to.eql(zoom_i)
+      expect(newState.scale).to.eql(zoom_i)
     })
 
     it('should have constant p_w', () => {
@@ -175,11 +175,11 @@ describe('Module: TransformWorld', () => {
     it('should have a constant zoom', () => {
       const zoom_i = 2
       transforms = [
-        set('zoom', zoom_i),
+        set('scale', zoom_i),
         statelessRotateBy(45, [0, 0]),
       ]
       newState = reduce(transforms, state)
-      expect(newState.zoom).to.be.eql(zoom_i)
+      expect(newState.scale).to.be.eql(zoom_i)
     })
 
     it('should have a constant p_w', () => {
@@ -207,7 +207,7 @@ describe('Module: TransformWorld', () => {
       newState = transform(state)
       expect(newState.world_container).to.almost.eql([100, 0])
       expect(newState.theta).to.eql(90)
-      expect(newState.zoom).to.eql(1)
+      expect(newState.scale).to.eql(1)
     })
 
     it('should rotate about a point', () => {
@@ -215,60 +215,60 @@ describe('Module: TransformWorld', () => {
       newState = transform(state)
       expect(newState.world_container).to.almost.eql([200, 0])
       expect(newState.theta).to.eql(90)
-      expect(newState.zoom).to.eql(1)
+      expect(newState.scale).to.eql(1)
       expect(fromContainerToWorld(newState, [100, 0])).to.almost.eql([0, 100])
 
       transform = statelessRotateBy(90, [100, 100])
       newState = transform(newState)
       expect(newState.world_container).to.almost.eql([200, 200])
       expect(newState.theta).to.eql(180)
-      expect(newState.zoom).to.eql(1)
+      expect(newState.scale).to.eql(1)
       expect(fromContainerToWorld(newState, [200, 100])).to.almost.eql([0, 100])
 
       transform = statelessRotateBy(90, [100, 100])
       newState = transform(newState)
       expect(newState.world_container).to.almost.eql([0, 200])
       expect(newState.theta).to.eql(270)
-      expect(newState.zoom).to.eql(1)
+      expect(newState.scale).to.eql(1)
       expect(fromContainerToWorld(newState, [100, 200])).to.almost.eql([0, 100])
 
       transform = statelessRotateBy(90, [100, 100])
       newState = transform(newState)
       expect(newState.world_container).to.almost.eql([0, 0])
       expect(newState.theta).to.eql(360)
-      expect(newState.zoom).to.eql(1)
+      expect(newState.scale).to.eql(1)
       expect(fromContainerToWorld(newState, [0, 100])).to.almost.eql([0, 100])
     })
 
     it('should rotate and hold the zoom correctly', () => {
-      state.zoom = (2)
+      state.scale = (2)
 
       transform = statelessRotateBy(90, [200, 200])
       newState = transform(state)
       expect(newState.world_container).to.almost.eql([400, 0])
       expect(newState.theta).to.eql(90)
-      expect(newState.zoom).to.eql(2)
+      expect(newState.scale).to.eql(2)
       expect(fromContainerToWorld(newState, [200, 0])).to.almost.eql([0, 100])
 
       transform = statelessRotateBy(90, [200, 200])
       newState = transform(newState)
       expect(newState.world_container).to.almost.eql([400, 400])
       expect(newState.theta).to.eql(180)
-      expect(newState.zoom).to.eql(2)
+      expect(newState.scale).to.eql(2)
       expect(fromContainerToWorld(newState, [400, 200])).to.almost.eql([0, 100])
 
       transform = statelessRotateBy(90, [200, 200])
       newState = transform(newState)
       expect(newState.world_container).to.almost.eql([0, 400])
       expect(newState.theta).to.eql(270)
-      expect(newState.zoom).to.eql(2)
+      expect(newState.scale).to.eql(2)
       expect(fromContainerToWorld(newState, [200, 400])).to.almost.eql([0, 100])
 
       transform = statelessRotateBy(90, [200, 200])
       newState = transform(newState)
       expect(newState.world_container).to.almost.eql([0, 0])
       expect(newState.theta).to.eql(360)
-      expect(newState.zoom).to.eql(2)
+      expect(newState.scale).to.eql(2)
       expect(fromContainerToWorld(newState, [0, 200])).to.almost.eql([0, 100])
     })
 
@@ -277,7 +277,7 @@ describe('Module: TransformWorld', () => {
       newState = transform(state)
       expect(newState.world_container).to.be.eql([0, 0])
       expect(newState.theta).to.eql(0)
-      expect(newState.zoom).to.eql(1)
+      expect(newState.scale).to.eql(1)
     })
   })
 });

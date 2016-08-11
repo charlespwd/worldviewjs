@@ -92,12 +92,17 @@ describe('Module: WorldView', () => {
   })
 
   describe('Unit: zoomBy', () => {
+    it('should throw if change is smaller or equal to 0', () => {
+      expect(() => view.zoomBy(0)).to.throw(Error, /positive ratio/)
+      expect(() => view.zoomBy(-1)).to.throw(Error, /positive ratio/)
+    });
+
     it('should zoom by a percent amount of the previous zoom', () => {
-      view.zoomBy(1)
+      view.zoomBy(2)
       transform = view.transform
       expect(transform.scale).to.eql(2)
 
-      view.zoomBy(1)
+      view.zoomBy(2)
       transform = view.transform
       expect(transform.scale).to.eql(4)
     })
@@ -183,7 +188,7 @@ describe('Module: WorldView', () => {
       // test
       expect(view.state.containerSize).to.be.eql([4, 4])
       expect(view.state.worldSize).to.be.eql([1, 1])
-      expect(view.state.zoom).to.be.eql(2)
+      expect(view.state.scale).to.be.eql(2)
       expect(view.state.world_container).to.be.eql([2, 0])
     })
   })
@@ -199,17 +204,17 @@ describe('Module: WorldView', () => {
     })
 
     it('should fit', () => {
-      expect(view.state.zoom).to.be.eql(2)
+      expect(view.state.scale).to.be.eql(2)
     })
 
     it('should not let you unzoom past the limit', () => {
       view.zoomTo(1)
-      expect(view.state.zoom).to.be.eql(2)
+      expect(view.state.scale).to.be.eql(2)
       view.zoomTo(3)
-      expect(view.state.zoom).to.be.eql(3)
+      expect(view.state.scale).to.be.eql(3)
     })
 
-    it('should not allow to pan at zoom = zoomlimit', () => {
+    it('should not allow to pan at scale = zoomlimit', () => {
       const initialPan = view.state.world_container
       view.panBy([1, 1])
       expect(view.state.world_container).to.be.eql(initialPan)
@@ -218,7 +223,7 @@ describe('Module: WorldView', () => {
     })
 
     it('should allow you to pan within limits after zooming in', () => {
-      view.zoomBy(1) // now world is twice as big as container
+      view.zoomBy(2) // now world is twice as big as container
       view.setWorldOrigin(0, 0) // start at 0,0
       expect(view.state.world_container).to.be.eql([0, 0])
 
@@ -238,7 +243,7 @@ describe('Module: WorldView', () => {
     })
 
     it('should not allow you to set world_document outside of domain', () => {
-      view.zoomBy(1) // now world is twice as big as container
+      view.zoomBy(2) // now world is twice as big as container
       view.setWorldOrigin(-10000, -10000) // should limit you to the max pan
       expect(view.state.world_container).to.be.eql([-100, -100])
     })

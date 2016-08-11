@@ -13,7 +13,7 @@ describe('Module: Transformations', () => {
   let state = {}
   beforeEach(() => {
     state = {
-      zoom: 1,
+      scale: 1,
       theta: 0,
       world_container: [0, 0],
       container_document: [0, 0],
@@ -24,7 +24,7 @@ describe('Module: Transformations', () => {
 
   describe('Unit: fromDocumentToContainer, fromContainerToDocument', () => {
     it('should be the inverse of each other', () => {
-      state.zoom = 2
+      state.scale = 2
       state.theta = 150
       state.world_container = [158, 23]
       state.container_document = [40, 2]
@@ -54,7 +54,7 @@ describe('Module: Transformations', () => {
 
     it('should not depend on the scale', () => {
       expect(fromDocumentToContainer(state, [1, 1])).to.eql([1, 1])
-      state.zoom = 2
+      state.scale = 2
       expect(fromDocumentToContainer(state, [1, 1])).to.eql([1, 1])
     })
   })
@@ -66,8 +66,8 @@ describe('Module: Transformations', () => {
       expect(fromWorldToContainer(state, [50, 50])).to.eql([50, 50])
     })
 
-    it('should depend on the zoom level', () => {
-      state.zoom = 2
+    it('should depend on the scale level', () => {
+      state.scale = 2
       expect(fromWorldToContainer(state, [100, 100])).to.eql([200, 200])
       expect(fromWorldToContainer(state, [50, 50])).to.eql([100, 100])
       expect(fromWorldToContainer(state, [0, 0])).to.eql([0, 0])
@@ -89,7 +89,7 @@ describe('Module: Transformations', () => {
     })
 
     it('should be the inverse of each other', () => {
-      state.zoom = 2
+      state.scale = 2
       state.theta = 150
       state.world_container = [158, 23]
       state.container_document = [40, 2]
@@ -108,7 +108,7 @@ describe('Module: Transformations', () => {
 
   describe('Unit: fromWorldToDocument, fromDocumentToWorld', () => {
     it('should be the inverse of each other', () => {
-      state.zoom = 2
+      state.scale = 2
       state.theta = 150
       state.world_container = [158, 23]
       state.container_document = [40, 2]
@@ -125,7 +125,7 @@ describe('Module: Transformations', () => {
     })
 
     it('should be the composition of the other two transformations', () => {
-      state.zoom = 2
+      state.scale = 2
       state.theta = 150
       state.world_container = [158, 23]
       state.container_document = [24, 42]

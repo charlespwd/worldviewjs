@@ -12,17 +12,17 @@ export const fromContainerToDocument = ({ container_document }, vector_container
 )
 
 // x_c = z*R*x_w + t_c
-export const fromWorldToContainer = ({ zoom, theta, world_container }, vector_world) => (
+export const fromWorldToContainer = ({ scale, theta, world_container }, vector_world) => (
   vector.add(
-    vector.scale(zoom, matrix.product(R(theta), vector_world)),
+    vector.scale(scale, matrix.product(R(theta), vector_world)),
     world_container
   )
 )
 
 // x_w = 1/z*(R^-1)(x_c - t_c)
-export const fromContainerToWorld = ({ zoom, theta, world_container }, vector_container) => (
+export const fromContainerToWorld = ({ scale, theta, world_container }, vector_container) => (
   vector.scale(
-    1 / zoom,
+    1 / scale,
     matrix.product(
       R(-theta),
       vector.sub(vector_container, world_container)

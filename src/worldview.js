@@ -15,7 +15,7 @@ export default function WorldView(opts) {
   /// State
   let state = {
     // scale level
-    zoom: 1,
+    scale: 1,
 
     // rotation angle in degrees
     theta: 0,
@@ -53,7 +53,7 @@ export default function WorldView(opts) {
       return {
         translate: state.world_container,
         rotate: state.theta,
-        scale: state.zoom,
+        scale: state.scale,
       }
     },
     panBy,
@@ -102,7 +102,7 @@ export default function WorldView(opts) {
   }
 
   function setZoom(scale) {
-    const transformations = withFit(set('zoom', scale))
+    const transformations = withFit(set('scale', scale))
     state = reduce(transformations, state)
   }
 
@@ -111,7 +111,7 @@ export default function WorldView(opts) {
   function resetContainerSize(width, height) {
     const change = width / state.containerSize[0]
     const transformations = [
-      statelessZoom(change * state.zoom, [0, 0]),
+      statelessZoom(change * state.scale, [0, 0]),
       set('containerSize', [width, height]),
     ]
     state = reduce(transformations, state)
@@ -120,17 +120,18 @@ export default function WorldView(opts) {
   function resetZoom() {
     if (options.fit) {
       state = reduce([
-        set('zoom', -1),
-        fit, // use the limiting zoom, and refit
+        set('scale', -1),
+        fit, // use the limiting scale, and refit
       ], state)
     } else {
-      state = reduce(set('zoom', 1), state)
+      state = reduce(set('scale', 1), state)
     }
   }
 
-  // Zoom by a percent change at a point in the document
-  function zoomBy(change = 0, pointer_document) {
-    const newZoom = state.zoom * (1 + change)
+  // Scale previous scale by change amount
+  function zoomBy(change = 1, pointer_document) {
+    if (change <= 0) throw new Error('zoomBy:: Change must be a positive ratio.')
+    const newZoom = state.scale * change
     zoomTo(newZoom, pointer_document)
   }
 
