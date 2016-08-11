@@ -42,6 +42,7 @@ describe('Module: PublicApi', () => {
     beforeEach(() => {
       wvMock.setContainerSize = sinon.spy()
       wvMock.setWorldSize = sinon.spy()
+      wvMock.resetZoom = sinon.spy()
     })
 
     it('should publish', () => {
@@ -49,11 +50,23 @@ describe('Module: PublicApi', () => {
       expect(renderSpy).to.have.been.called
     })
 
-    it('should set the worldSize, then the containerSize', () => {
-      view.setDimensions(10, 11, 20, 21)
-      sinon.assert.callOrder(wvMock.setWorldSize, wvMock.setContainerSize)
-      expect(wvMock.setWorldSize).to.have.been.calledWith(10, 11)
-      expect(wvMock.setContainerSize).to.have.been.calledWith(20, 21)
+    // In the case where worldSize is bigger than containerSize, fitting the
+    // worldSize would end you up in state
+    // {
+    //   worldSize: [2, 2],
+    //   containerSize: [1, 1],
+    //   zoom: 1, // since [2,2] already fits in [1,1], it is not refitted
+    // }
+    // Which means that setting the containerSize to a size that is *smaller* than
+    // worldSize will not refit the scale level. This is not what we want.
+    // Setting the dimensions, being done soon after you create the object,
+    // should reset you to the minimum zoom.
+    it('should set the worldSize, then the containerSize, then reset the Zoom', () => {
+      view.setDimensions(20, 21, 10, 11)
+      sinon.assert.callOrder(wvMock.setWorldSize, wvMock.setContainerSize, wvMock.resetZoom)
+      expect(wvMock.setWorldSize).to.have.been.calledWith(20, 21)
+      expect(wvMock.setContainerSize).to.have.been.calledWith(10, 11)
+      expect(wvMock.resetZoom).to.have.been.called
     })
   })
 

@@ -38,6 +38,7 @@ export default function PublicWorldView(render, opts) {
   function setDimensions(worldWidth, worldHeight, containerWidth, containerHeight) {
     view.setWorldSize(worldWidth, worldHeight)
     view.setContainerSize(containerWidth, containerHeight)
+    view.resetZoom()
     publish()
   }
 
