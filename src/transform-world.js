@@ -10,7 +10,7 @@ export const identity = (state) => state
 // Give me a set of transformations and a state and I'll give you a
 // new state. Transformations are composable.
 export const reduce = (transforms = [], initialState) => (
-  transforms.reduce((state, transform) => transform(state), initialState)
+  [].concat(transforms).reduce((state, transform) => transform(state), initialState)
 );
 
 // # Fixed point zoom transformation

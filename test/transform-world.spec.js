@@ -48,6 +48,13 @@ describe('Module: TransformWorld', () => {
       expect(reduce(undefined, state)).to.eql(state)
       expect(reduce([], state)).to.eql(state)
     });
+
+    it('should handle a singular transform as first argument', () => {
+      expect(reduce(set('theta', 30), state)).to.eql({
+        ...state,
+        theta: 30,
+      })
+    });
   });
 
   describe('Unit: statelessZoom', () => {
