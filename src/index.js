@@ -1,4 +1,4 @@
-import worldView from './worldview'
+import WorldView from './worldview'
 import vector from './utils/vector'
 import { center_world } from './centers'
 
@@ -13,7 +13,7 @@ const validateEventPosition = (method, e) => {
 }
 
 export default function PublicWorldView(render, opts) {
-  const view = worldView(opts)
+  const view = new WorldView(opts)
   const state = {
     isPanning: false,
     panStart: null,
@@ -21,16 +21,18 @@ export default function PublicWorldView(render, opts) {
   }
 
   /// Public API
-  this.zoomAtMouse = zoomAtMouse
-  this.panStart = panStart
-  this.panMove = panMove
-  this.panEnd = panEnd
-  this.setDimensions = setDimensions
-  this.resetContainerSize = resetContainerSize
-  this.setContainerOrigin = view.setContainerOrigin
-  this.debug = {
-    decorate,
-    ...view,
+  return {
+    setContainerOrigin: view.setContainerOrigin,
+    zoomAtMouse,
+    panStart,
+    panMove,
+    panEnd,
+    setDimensions,
+    resetContainerSize,
+    debug: {
+      decorate,
+      view,
+    },
   }
 
   function setDimensions(worldWidth, worldHeight, containerWidth, containerHeight) {
