@@ -34,7 +34,7 @@ export default function WorldView(opts) {
   }
 
   /// Options
-  const options = {
+  let options = {
     // Fit the world to the container when zooming and panning
     fit: false,
 
@@ -43,6 +43,9 @@ export default function WorldView(opts) {
 
   /// Public API
   return {
+    get options() {
+      return options
+    },
     get state() {
       return state
     },
@@ -54,16 +57,25 @@ export default function WorldView(opts) {
       }
     },
     panBy,
-    rotateBy,
-    setContainerSize,
-    setContainerOrigin,
-    setWorldSize,
-    setWorldOrigin,
-    setZoom,
-    setTheta,
     resetContainerSize,
-    zoomTo,
+    resetZoom,
+    rotateBy,
+    setContainerOrigin,
+    setContainerSize,
+    setOptions,
+    setTheta,
+    setWorldOrigin,
+    setWorldSize,
+    setZoom,
     zoomBy,
+    zoomTo,
+  }
+
+  function setOptions(newOptions = {}) {
+    options = {
+      ...options,
+      ...newOptions,
+    }
   }
 
   function setWorldSize(width, height) {
@@ -103,6 +115,17 @@ export default function WorldView(opts) {
       set('containerSize', [width, height]),
     ]
     state = reduce(transformations, state)
+  }
+
+  function resetZoom() {
+    if (options.fit) {
+      state = reduce([
+        set('zoom', -1),
+        fit, // use the limiting zoom, and refit
+      ], state)
+    } else {
+      state = reduce(set('zoom', 1), state)
+    }
   }
 
   // Zoom by a percent change at a point in the document
