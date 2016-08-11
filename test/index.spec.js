@@ -150,17 +150,40 @@ describe('Module: PublicApi', () => {
 
     it('should zoom positively by 3% when the wheel delta is positive', () => {
       view.zoomAtMouse(10)
-      expect(wvMock.zoomBy).to.have.been.calledWith(0.03)
+      expect(wvMock.zoomBy).to.have.been.calledWith(1.03)
     })
 
     it('should zoom negatively by 3% when the wheel delta is negative', () => {
       view.zoomAtMouse(-10)
-      expect(wvMock.zoomBy).to.have.been.calledWith(-0.03)
+      expect(wvMock.zoomBy).to.have.been.calledWith(0.97)
     })
 
     it('should turn the event position into a vector', () => {
       view.zoomAtMouse(-10, pointer(10, 10))
-      expect(wvMock.zoomBy).to.have.been.calledWith(-0.03, [10, 10])
+      expect(wvMock.zoomBy).to.have.been.calledWith(0.97, [10, 10])
+    })
+  })
+
+  describe('Unit: zoomBy', () => {
+    beforeEach(() => {
+      wvMock.zoomBy = sinon.spy()
+    })
+
+    it('should publish', () => {
+      view.zoomBy(10)
+      expect(renderSpy).to.have.been.called
+    })
+
+    it('should zoom positively by change', () => {
+      view.zoomBy(10)
+      expect(wvMock.zoomBy).to.have.been.calledWith(10)
+      view.zoomBy(0.01)
+      expect(wvMock.zoomBy).to.have.been.calledWith(0.01)
+    })
+
+    it('should turn the event position into a vector', () => {
+      view.zoomBy(10, pointer(10, 10))
+      expect(wvMock.zoomBy).to.have.been.calledWith(10, [10, 10])
     })
   })
 })

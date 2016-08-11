@@ -24,6 +24,7 @@ export default function PublicWorldView(render, opts) {
   return {
     setContainerOrigin: view.setContainerOrigin,
     zoomAtMouse,
+    zoomBy,
     panStart,
     panMove,
     panEnd,
@@ -48,7 +49,14 @@ export default function PublicWorldView(render, opts) {
   }
 
   function zoomAtMouse(wheelDelta, e = { pageX: undefined, pageY: undefined }) {
-    const change = wheelDelta > 0 ? 0.03 : -0.03 // %
+    const change = wheelDelta > 0 ? 1.03 : 0.97 // %
+    const pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined
+    view.zoomBy(change, pointer_document)
+    publish()
+  }
+
+  // Where change is the ratio between the previous and the future scale level
+  function zoomBy(change, e = { pageX: undefined, pageY: undefined }) {
     const pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined
     view.zoomBy(change, pointer_document)
     publish()
