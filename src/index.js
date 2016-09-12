@@ -25,11 +25,13 @@ export default function PublicWorldView(render, opts) {
     setContainerOrigin: view.setContainerOrigin,
     zoomAtMouse,
     zoomBy,
+    panBy,
     panStart,
     panMove,
     panEnd,
     setDimensions,
     resetContainerSize,
+    publish,
     debug: {
       decorate,
       view,
@@ -84,14 +86,17 @@ export default function PublicWorldView(render, opts) {
     state.panEnd = [ e.pageX, e.pageY ]
   }
 
+  function panBy(dx, dy) {
+    if (dx === undefined || dy === undefined) {
+      throw new Error(`InvalidArguments: panBy(dx, dy) called with ${dx}, ${dy}`)
+    }
+    view.panBy([dx, dy])
+    publish()
+  }
+
   function decorate({ translate, rotate, scale }) {
-    // The default origin of transform operations is 50%, 50%. The math in this
-    // library assumes that the origin is located at the top left corner (as it
-    // should be). Because SVG does not support the CSS property transform-origin.
-    // I prefer to do it the old way and translate my transformations to the
-    // correct origin before doing them, and then placing it back. It's a
-    // tricky kind of thing that I wouldn't want my best friend to try to
-    // debug. For developer happiness' sake I'll just handle it for you.
+    // The default transform-origin for divs is '50% 50%'. The math in this
+    // library assumes that the origin is located at the top left corner.
     const transformFromTopLeft = (transform, [cx, cy]) => `
       translate(${-cx}px, ${-cy}px)
       ${transform}
@@ -102,12 +107,19 @@ export default function PublicWorldView(render, opts) {
       translate,
       rotate,
       scale,
-      transform: transformFromTopLeft(
-        `
+
+      // transformTopLeft assumes transform-origin is 'top left', default in svg
+      transformTopLeft: `
+        translate(${translate[0]}px, ${translate[1]}px)
+        rotate(${rotate})
+        scale(${scale})
+      `,
+
+      // transform5050 assumes transform-origin is '50% 50%', default for divs
+      transform5050: transformFromTopLeft(`
           translate(${translate[0]}px, ${translate[1]}px)
           rotate(${rotate})
-          scale(${scale})
-        `,
+          scale(${scale})`,
         center_world(view.state)
       ),
     }
