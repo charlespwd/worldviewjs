@@ -1,6 +1,7 @@
 import vector from './utils/vector'
 import matrix, { R } from './utils/matrix'
 import { setState } from './utils/functional'
+import * as math from './utils/math'
 
 // Transformations are simple WorldState -> WorldState mappings.
 // The simplest world transformation: change a value.
@@ -205,11 +206,15 @@ export const statelessRotateBy = (degrees, pivot_container = [0, 0]) => (state) 
 //
 // Therefore,
 //   C_c - z*W_w <= t_c <= 0
-export const fit = (state) => {
+export const fit = (options = {}) => (state) => {
   const { worldSize, containerSize } = state
   const scalelimit_x = containerSize[0] / worldSize[0]
   const scalelimit_y = containerSize[1] / worldSize[1]
-  const scale = Math.max(scalelimit_x, scalelimit_y, state.scale)
+  const scale = math.bounded(
+    options.minZoom,
+    Math.max(scalelimit_x, scalelimit_y, state.scale),
+    options.maxZoom
+  );
   return ({
     ...state,
     scale,

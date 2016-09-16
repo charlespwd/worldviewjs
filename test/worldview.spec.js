@@ -95,7 +95,7 @@ describe('Module: WorldView', () => {
     it('should throw if change is smaller or equal to 0', () => {
       expect(() => view.zoomBy(0)).to.throw(Error, /positive ratio/)
       expect(() => view.zoomBy(-1)).to.throw(Error, /positive ratio/)
-    });
+    })
 
     it('should zoom by a percent amount of the previous zoom', () => {
       view.zoomBy(2)
@@ -246,6 +246,108 @@ describe('Module: WorldView', () => {
       view.zoomBy(2) // now world is twice as big as container
       view.setWorldOrigin(-10000, -10000) // should limit you to the max pan
       expect(view.state.world_container).to.be.eql([-100, -100])
+    })
+  })
+
+  describe('With option.maxZoom and option.minZoom', () => {
+    let maxZoom
+    let minZoom
+    beforeEach(() => {
+      minZoom = 0.5
+      maxZoom = 2
+      view = new WorldView({
+        maxZoom,
+        minZoom,
+      })
+    })
+
+    it('should not let you zoom more than the max zoom level with zoomBy', () => {
+      expect(view.state.scale).to.be.equal(1)
+      view.zoomBy(10)
+      expect(view.state.scale).to.be.equal(maxZoom)
+    })
+
+    it('should not let you zoom more than the max zoom level with zoomTo', () => {
+      expect(view.state.scale).to.be.equal(1)
+      view.zoomTo(10)
+      expect(view.state.scale).to.be.equal(maxZoom)
+    })
+
+    it('should not let you zoom less than the min zoom level with zoomBy', () => {
+      expect(view.state.scale).to.be.equal(1)
+      view.zoomBy(0.1)
+      expect(view.state.scale).to.be.equal(minZoom)
+    })
+
+    it('should not let you zoom less than the min zoom level with zoomTo', () => {
+      expect(view.state.scale).to.be.equal(1)
+      view.zoomTo(0.1)
+      expect(view.state.scale).to.be.equal(minZoom)
+    })
+
+    it('should not let you zoom more than the max zoom with setZoom', () => {
+      expect(view.state.scale).to.be.equal(1)
+      view.setZoom(5)
+      expect(view.state.scale).to.be.equal(maxZoom)
+    });
+
+    it('should not let you zoom less than the min zoom with setZoom', () => {
+      expect(view.state.scale).to.be.equal(1)
+      view.setZoom(0.1)
+      expect(view.state.scale).to.be.equal(minZoom)
+    });
+
+    it('should not let you reset the zoom to more than maxZoom', () => {
+      view = new WorldView({
+        maxZoom: 0.5,
+      })
+
+      view.zoomTo(0.1)
+      expect(view.state.scale).to.be.equal(0.1)
+
+      view.resetZoom()
+      expect(view.state.scale).to.be.equal(0.5)
+    })
+
+    it('should not let you reset the zoom to less than minZoom', () => {
+      view = new WorldView({
+        minZoom: 2,
+      })
+
+      view.zoomTo(5)
+      expect(view.state.scale).to.be.equal(5)
+
+      view.resetZoom()
+      expect(view.state.scale).to.be.equal(2)
+    })
+  })
+
+  describe('With option.maxZoom, option.minZoom and option.fit', () => {
+    beforeEach(() => {
+      view = new WorldView({
+        maxZoom: 1.5,
+        minZoom: 0.5,
+        fit: true,
+      })
+    })
+
+    it('should not zoom more than maxZoom even if asking to fit.', () => {
+      // implying fit zoom = 2
+      view.setWorldSize(50, 50)
+      view.setContainerSize(100, 100)
+
+      expect(view.state.scale).to.be.equal(1.5)
+    })
+
+    it('should not zoom less than minZoom even if asking to fit', () => {
+      view = new WorldView({
+        minZoom: 5,
+        fit: true,
+      })
+      // implying fit zoom = 2
+      view.setWorldSize(50, 50)
+      view.setContainerSize(100, 100)
+      expect(view.state.scale).to.eql(5)
     })
   })
 })

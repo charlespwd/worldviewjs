@@ -1,6 +1,7 @@
 import { center_container } from './centers'
 import { setState } from './utils/functional'
 import { fromDocumentToContainer } from './transform-vector'
+import * as math from './utils/math';
 import {
   fit,
   identity,
@@ -38,6 +39,12 @@ export default function WorldView(opts) {
     // Fit the world to the container when zooming and panning
     fit: false,
 
+    // Don't let the user zoom more than maxZoom
+    maxZoom: undefined,
+
+    // Don't let the user zoom less than minZoom
+    minZoom: undefined,
+
     ...opts,
   }
 
@@ -71,6 +78,10 @@ export default function WorldView(opts) {
     zoomTo,
   }
 
+  function bounded(scale) {
+    return math.bounded(options.minZoom, scale, options.maxZoom);
+  }
+
   function setOptions(newOptions = {}) {
     options = {
       ...options,
@@ -102,7 +113,7 @@ export default function WorldView(opts) {
   }
 
   function setZoom(scale) {
-    const transformations = withFit(set('scale', scale))
+    const transformations = withFit(set('scale', bounded(scale)))
     state = reduce(transformations, state)
   }
 
@@ -121,17 +132,17 @@ export default function WorldView(opts) {
     if (options.fit) {
       state = reduce([
         set('scale', -1),
-        fit, // use the limiting scale, and refit
+        fit(options), // use the limiting scale, and refit
       ], state)
     } else {
-      state = reduce(set('scale', 1), state)
+      state = reduce(set('scale', bounded(1)), state)
     }
   }
 
   // Scale previous scale by change amount
   function zoomBy(change = 1, pointer_document) {
     if (change <= 0) throw new Error('zoomBy:: Change must be a positive ratio.')
-    const newZoom = state.scale * change
+    const newZoom = bounded(state.scale * change)
     zoomTo(newZoom, pointer_document)
   }
 
@@ -140,7 +151,7 @@ export default function WorldView(opts) {
     const pointer_container = pointer_document instanceof Array
       ? fromDocumentToContainer(state, pointer_document)
       : center_container(state)
-    const transformations = withFit(statelessZoom(newZoom, pointer_container))
+    const transformations = withFit(statelessZoom(bounded(newZoom), pointer_container))
     state = reduce(transformations, state)
   }
 
@@ -163,7 +174,7 @@ export default function WorldView(opts) {
   function withFit(transformations) {
     return [].concat(
       transformations,
-      options.fit ? fit : identity
+      options.fit ? fit(options) : identity
     )
   }
 }
