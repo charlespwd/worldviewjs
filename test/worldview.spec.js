@@ -289,13 +289,13 @@ describe('Module: WorldView', () => {
       expect(view.state.scale).to.be.equal(1)
       view.setZoom(5)
       expect(view.state.scale).to.be.equal(maxZoom)
-    });
+    })
 
     it('should not let you zoom less than the min zoom with setZoom', () => {
       expect(view.state.scale).to.be.equal(1)
       view.setZoom(0.1)
       expect(view.state.scale).to.be.equal(minZoom)
-    });
+    })
 
     it('should not let you reset the zoom to more than maxZoom', () => {
       view = new WorldView({
@@ -348,6 +348,38 @@ describe('Module: WorldView', () => {
       view.setWorldSize(50, 50)
       view.setContainerSize(100, 100)
       expect(view.state.scale).to.eql(5)
+    })
+  })
+
+  describe('Unit: isZoomedOut', () => {
+    it('should return true when the zoom level is equal to minZoom', () => {
+      view = new WorldView({
+        minZoom: 1.0,
+      })
+
+      // implying zoom = 1
+      view.setWorldSize(50, 50)
+      view.setContainerSize(50, 50)
+      expect(view.isZoomedOut()).to.be.true
+
+      view.setZoom(2)
+      expect(view.isZoomedOut()).to.be.false
+    })
+
+    it('should return true when the zoom level is equal to the minimum fit zoom level', () => {
+      view = new WorldView({
+        fit: true,
+      })
+
+      // implying fit zoom = 2
+      view.setWorldSize(50, 50)
+      view.setContainerSize(100, 100)
+      expect(view.state.scale).to.equal(2)
+      expect(view.isZoomedOut()).to.be.true
+
+      view.setZoom(3)
+      expect(view.state.scale).to.equal(3)
+      expect(view.isZoomedOut()).to.be.false
     })
   })
 })

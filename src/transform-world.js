@@ -208,11 +208,10 @@ export const statelessRotateBy = (degrees, pivot_container = [0, 0]) => (state) 
 //   C_c - z*W_w <= t_c <= 0
 export const fit = (options = {}) => (state) => {
   const { worldSize, containerSize } = state
-  const scalelimit_x = containerSize[0] / worldSize[0]
-  const scalelimit_y = containerSize[1] / worldSize[1]
+  const limit = scaleLimit(state)
   const scale = math.bounded(
     options.minZoom,
-    Math.max(scalelimit_x, scalelimit_y, state.scale),
+    Math.max(limit, state.scale),
     options.maxZoom
   );
   return ({
@@ -227,4 +226,10 @@ export const fit = (options = {}) => (state) => {
       vector.zero
     ),
   })
+}
+
+export function scaleLimit({ worldSize, containerSize }) {
+  const scalelimit_x = containerSize[0] / worldSize[0]
+  const scalelimit_y = containerSize[1] / worldSize[1]
+  return Math.max(scalelimit_x, scalelimit_y)
 }

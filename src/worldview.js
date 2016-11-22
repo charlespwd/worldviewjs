@@ -1,11 +1,12 @@
 import { center_container } from './centers'
 import { setState } from './utils/functional'
 import { fromDocumentToContainer } from './transform-vector'
-import * as math from './utils/math';
+import * as math from './utils/math'
 import {
   fit,
   identity,
   reduce,
+  scaleLimit,
   set,
   statelessPanBy,
   statelessRotateBy,
@@ -76,10 +77,11 @@ export default function WorldView(opts) {
     setZoom,
     zoomBy,
     zoomTo,
+    isZoomedOut,
   }
 
   function bounded(scale) {
-    return math.bounded(options.minZoom, scale, options.maxZoom);
+    return math.bounded(options.minZoom, scale, options.maxZoom)
   }
 
   function setOptions(newOptions = {}) {
@@ -176,5 +178,10 @@ export default function WorldView(opts) {
       transformations,
       options.fit ? fit(options) : identity
     )
+  }
+
+  function isZoomedOut() {
+    const limit = scaleLimit(state);
+    return state.scale === options.minZoom || state.scale === limit;
   }
 }
