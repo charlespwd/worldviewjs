@@ -40,6 +40,10 @@ export default function WorldView(opts) {
     // Fit the world to the container when zooming and panning
     fit: false,
 
+    // Fit the world to the container so that no whitespace can
+    // be visible
+    fitNoWhitespace: true,
+
     // Don't let the user zoom more than maxZoom
     maxZoom: undefined,
 
