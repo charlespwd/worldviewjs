@@ -725,7 +725,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.statelessRotateBy = statelessRotateBy;
-	// # Fitting to the container
+	var fit = function fit() {
+	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	  return function (state) {
+	    if (options.fitNoWhitespace) {
+	      return fitNoWhitespace(state, options);
+	    }
+
+	    return fitWithWhitespace(state, options);
+	  };
+	};
+
+	exports.fit = fit;
+	// # Fitting without whitespace
 	// We have two limits, the first one is on the scale, the second one is on the
 	// translation vector.
 	//
@@ -788,32 +800,136 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Limit #2
 	//   C_c - z*W_w <=  t_c
 	//
-	// Therefore,
-	//   C_c - z*W_w <= t_c <= 0
-	var fit = function fit() {
-	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-	  return function (state) {
-	    var worldSize = state.worldSize;
-	    var containerSize = state.containerSize;
+	// Therefore, C_c - z*W_w <= t_c <= 0
+	function fitNoWhitespace(state, options) {
+	  var worldSize = state.worldSize;
+	  var containerSize = state.containerSize;
 
-	    var limit = scaleLimit(state);
-	    var scale = math.bounded(options.minZoom, Math.max(limit, state.scale), options.maxZoom);
-	    return _extends({}, state, {
-	      scale: scale,
-	      world_container: _utilsVector2['default'].bounded(_utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, worldSize)), state.world_container, _utilsVector2['default'].zero)
-	    });
+	  var limit = scaleLimit(state);
+	  var scale = math.bounded(options.minZoom, Math.max(limit, state.scale), options.maxZoom);
+	  return _extends({}, state, {
+	    scale: scale,
+	    world_container: _utilsVector2['default'].bounded(_utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, worldSize)), state.world_container, _utilsVector2['default'].zero)
+	  });
+	}
+
+	// # Fitting with whitespace
+	//
+	// Fitting with whitespace is similar to the noWhitespace fitting except that it
+	// allows for zooming in the zone where
+	//   min(scaleLimit) <= scale <= max(scaleLimit).
+	//
+	// When that happens, we want to
+	//   1) center the world within the limiting direction, and
+	//   2) allow for fitted panning in the perpendicular direction.
+	//
+	// Here's a drawing of the situation
+	//
+	//           |---> midline                |---> midline
+	//           |                            |
+	//        ---|---                         |
+	//    ---|---|---|---              ---- --|-- ----
+	//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
+	//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
+	//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
+	//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
+	//    ---|---|---|---C             ---- --|--W----C
+	//       |   |   |                        |
+	//        ---|---W                        |---> midline
+	//           |
+	//           |---> midline
+	//
+	//          (A)                          (B)
+	//
+	//  In (A), min(scaleLimit) < scale < max(scaleLimit)
+	//  In (B), min(scaleLimit) = scale
+	//
+	// Thus, in this mode we have three limitting factors
+	//
+	//  1) The scale limit
+	//  2) The centered world within the whitespaced direction
+	//  3) Fitted panning in the perpendicular direction
+	//
+	// ## The scale limit
+	//
+	// When the aspect ratio is not equal, we either have
+	//
+	//     C_c_x > W_c_x  AND  C_c_y = W_c_y
+	//     C_c_x = W_c_x  AND  C_c_y > W_c_y
+	//
+	// Transforming the world size into world coordinates and solving for the
+	// scale, we get
+	//
+	//     k_limit = min(C_c_x / W_w_x, C_c_y / W_w_y) <= k
+	//
+	// ## Centered world about the whitespaced direction
+	//
+	// When that happens, we fix the translation vector such that the world is
+	// centered in whitespaced direction.
+	//
+	// In other words,
+	//
+	//  (W_w_centered / 2)_c = C_c_centered / 2
+	//  (k * W_w_centered / 2 + t_c_centered) = C_c_centered / 2
+	//
+	// Which implies
+	//
+	//     t_c_centered = 0.5 * (C_c_centered - k * W_w_centered)
+	//
+	// ## Fitted pan in the non-whitespaced direction
+	//
+	// This is a copy paste of the condition for noWhitespace fitting. Therefore,
+	//
+	//     C_c_opposite - k * W_w_other <= t_c_other <= 0
+	function fitWithWhitespace(state, options) {
+	  var worldSize = state.worldSize;
+	  var containerSize = state.containerSize;
+
+	  var limit = scaleLimit(state, Math.min);
+	  var scale = math.bounded(options.minZoom, Math.max(limit, state.scale), options.maxZoom);
+
+	  // When the scale is greater than both limiting fitting scales, revert to
+	  // noWhitespace fitting.
+	  if (scale >= scaleLimit(state, Math.max)) {
+	    return fitNoWhitespace(state, options);
+	  }
+
+	  // t_c_centered = 0.5 * (C_c - k * W_w)
+	  var centered = _utilsVector2['default'].scale(0.5, _utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, worldSize)));
+
+	  // C_c - k * W_w <= t_c <= 0
+	  var fitted = _utilsVector2['default'].bounded(_utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, worldSize)), state.world_container, _utilsVector2['default'].zero);
+
+	  var conditions = {
+	    centered: centered,
+	    fitted: fitted
 	  };
-	};
 
-	exports.fit = fit;
+	  return _extends({}, state, {
+	    scale: scale,
+	    world_container: limitingConditions(state).map(function (name, i) {
+	      return conditions[name][i];
+	    })
+	  });
+	}
 
-	function scaleLimit(_ref) {
+	function limitingConditions(_ref) {
 	  var worldSize = _ref.worldSize;
 	  var containerSize = _ref.containerSize;
 
 	  var scalelimit_x = containerSize[0] / worldSize[0];
 	  var scalelimit_y = containerSize[1] / worldSize[1];
-	  return Math.max(scalelimit_x, scalelimit_y);
+	  return scalelimit_x <= scalelimit_y ? ['fitted', 'centered'] : ['centered', 'fitted'];
+	}
+
+	function scaleLimit(_ref2) {
+	  var worldSize = _ref2.worldSize;
+	  var containerSize = _ref2.containerSize;
+	  var comparator = arguments.length <= 1 || arguments[1] === undefined ? Math.max : arguments[1];
+
+	  var scalelimit_x = containerSize[0] / worldSize[0];
+	  var scalelimit_y = containerSize[1] / worldSize[1];
+	  return comparator(scalelimit_x, scalelimit_y);
 	}
 
 /***/ },
@@ -868,6 +984,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var options = _extends({
 	    // Fit the world to the container when zooming and panning
 	    fit: false,
+
+	    // Fit the world to the container so that no whitespace can
+	    // be visible
+	    fitNoWhitespace: true,
 
 	    // Don't let the user zoom more than maxZoom
 	    maxZoom: undefined,
