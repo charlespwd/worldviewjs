@@ -6,6 +6,9 @@ export const delta = (a, b) => a - b
 export const bounded = (lower = -Infinity, x, upper = Infinity) => (
   Math.min(upper, Math.max(lower, x))
 )
+export const isBounded = (lower, x, upper) => (
+  lower <= x && x <= upper
+)
 
 export const ops = {
   '+': (a, b) => a + b,

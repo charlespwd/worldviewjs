@@ -256,7 +256,8 @@ describe('Module: WorldView', () => {
         view.setZoom(1)
 
         expect(view.state.scale).to.eql(1)
-        expect(view.state.world_container[0]).to.eql(45)
+        expect(view.state.world_container[0]).to.be.at.least(0)
+        expect(view.state.world_container[0]).to.be.at.most(90)
         expect(view.state.world_container[1]).to.be.at.least(0)
         expect(view.state.world_container[1]).to.be.at.most(0)
 
@@ -268,24 +269,21 @@ describe('Module: WorldView', () => {
         expect(view.state.scale).to.eql(1)
         expect(view.state.world_container[0]).to.be.at.least(0)
         expect(view.state.world_container[0]).to.be.at.most(0)
-        expect(view.state.world_container[1]).to.eql(45)
+        expect(view.state.world_container[1]).to.be.at.least(0)
+        expect(view.state.world_container[1]).to.be.at.most(90)
       })
 
-      it('should not allow you to pan in the limiting direction and fix the translation to half the world size in the container coords', () => { // eslint-disable-line
-        expect(view.state.world_container[0]).to.eql((100 - 75) / 2)
-
+      it('should allow you to pan in the limiting direction outside the world', () => { // eslint-disable-line
         // testing right limit
         view.panBy([10000, 0])
-        expect(view.state.world_container[0]).to.eql((100 - 75) / 2)
+        expect(view.state.world_container[0]).to.eql(25)
 
         // testing left limit
         view.panBy([-100000, 0])
-        expect(view.state.world_container[0]).to.eql((100 - 75) / 2)
+        expect(view.state.world_container[0]).to.eql(0)
       })
 
       it('should allow you to pan within the fittable direction', () => {
-        expect(view.state.world_container[1]).to.eql(0)
-
         // testing top limit
         view.panBy([0, -10000])
         expect(view.state.world_container[1]).to.eql(-50)
