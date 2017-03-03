@@ -1131,8 +1131,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function isZoomedOut() {
-	    var limit = _transformWorld.scaleLimit(state);
-	    return state.scale === options.minZoom || state.scale === limit;
+	    var limit = _transformWorld.scaleLimit(state, options.fitNoWhitespace ? Math.max : Math.min);
+	    return state.scale === options.minZoom || state.scale <= limit;
 	  }
 	}
 
