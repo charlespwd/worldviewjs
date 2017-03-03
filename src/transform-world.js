@@ -242,24 +242,20 @@ function fitNoWhitespace(state, options) {
 //   min(scaleLimit) <= scale <= max(scaleLimit).
 //
 // When that happens, we want to
-//   1) center the world within the limiting direction, and
+//   1) allow for fitted panning with whitespace in the contained direction.
 //   2) allow for fitted panning in the perpendicular direction.
 //
 // Here's a drawing of the situation
 //
-//           |---> midline                |---> midline
-//           |                            |
-//        ---|---                         |
-//    ---|---|---|---              ---- --|-- ----
-//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
-//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
-//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
-//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
-//    ---|---|---|---C             ---- --|--W----C
-//       |   |   |                        |
-//        ---|---W                        |---> midline
-//           |
-//           |---> midline
+//        -------
+//    ---|-------|--              -- ------- ----
+//   |xxx|       |xx|            |xx|       |xxxx|
+//   |xxx|       |xx|            |xx|       |xxxx|
+//   |xxx|       |xx|            |xx|       |xxxx|
+//   |xxx|       |xx|            |xx|       |xxxx|
+//    ---|-------|--C             -- -------W----C
+//       |       |
+//        -------W
 //
 //          (A)                          (B)
 //
@@ -269,7 +265,7 @@ function fitNoWhitespace(state, options) {
 // Thus, in this mode we have three limitting factors
 //
 //  1) The scale limit
-//  2) The centered world within the whitespaced direction
+//  2) The fitted panning in the contained direction
 //  3) Fitted panning in the perpendicular direction
 //
 // ## The scale limit
@@ -284,19 +280,14 @@ function fitNoWhitespace(state, options) {
 //
 //     k_limit = min(C_c_x / W_w_x, C_c_y / W_w_y) <= k
 //
-// ## Centered world about the whitespaced direction
+// ## Fitted panning with whitespace in the contained direction
 //
-// When that happens, we fix the translation vector such that the world is
-// centered in whitespaced direction.
+// We get the same bounds we would get for unbounded panning except that the
+// translation vector becomes strictly positive (instead of strictly negative)
 //
 // In other words,
 //
-//  (W_w_centered / 2)_c = C_c_centered / 2
-//  (k * W_w_centered / 2 + t_c_centered) = C_c_centered / 2
-//
-// Which implies
-//
-//     t_c_centered = 0.5 * (C_c_centered - k * W_w_centered)
+//  0 <= t_c_contained <= C_c_contained - k * W_w_contained)
 //
 // ## Fitted pan in the non-whitespaced direction
 //
@@ -318,15 +309,13 @@ function fitWithWhitespace(state, options) {
     return fitNoWhitespace(state, options)
   }
 
-  // t_c_centered = 0.5 * (C_c - k * W_w)
-  const centered = vector.scale(
-    0.5,
+  // 0 <= t_c <= C_c - k * W_w
+  const contained = vector.bounded(
+    vector.zero,
+    state.world_container,
     vector.sub(
       containerSize,
-      vector.scale(
-        scale,
-        worldSize
-      )
+      vector.scale(scale, worldSize)
     )
   )
 
@@ -341,7 +330,7 @@ function fitWithWhitespace(state, options) {
   )
 
   const conditions = {
-    centered,
+    contained,
     fitted,
   }
 
@@ -356,8 +345,8 @@ function limitingConditions({ worldSize, containerSize }) {
   const scalelimit_x = containerSize[0] / worldSize[0]
   const scalelimit_y = containerSize[1] / worldSize[1]
   return scalelimit_x <= scalelimit_y
-    ? ['fitted', 'centered']
-    : ['centered', 'fitted']
+    ? ['fitted', 'contained']
+    : ['contained', 'fitted']
 }
 
 export function scaleLimit({ worldSize, containerSize }, comparator = Math.max) {

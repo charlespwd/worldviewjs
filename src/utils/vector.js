@@ -12,8 +12,10 @@ export const bounded = (u, v, w) => min(max(u, v), w)
 export const norm = (v) => Math.sqrt(dotProduct(v, v).reduce(ops['+']))
 export const normalize = (v) => scale(1 / norm(v), v)
 export const zero = Object.freeze([0, 0])
+export const abs = (v) => v.map(Math.abs)
 
 export default {
+  abs,
   add,
   bounded,
   max,
