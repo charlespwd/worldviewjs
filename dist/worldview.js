@@ -97,8 +97,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var upper = arguments.length <= 2 || arguments[2] === undefined ? Infinity : arguments[2];
 	  return Math.min(upper, Math.max(lower, x));
 	};
-
 	exports.bounded = bounded;
+	var isBounded = function isBounded(lower, x, upper) {
+	  return lower <= x && x <= upper;
+	};
+
+	exports.isBounded = isBounded;
 	var ops = {
 	  '+': function _(a, b) {
 	    return a + b;
@@ -163,9 +167,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	exports.normalize = normalize;
 	var zero = Object.freeze([0, 0]);
-
 	exports.zero = zero;
+	var abs = function abs(v) {
+	  return v.map(Math.abs);
+	};
+
+	exports.abs = abs;
 	exports['default'] = {
+	  abs: abs,
 	  add: add,
 	  bounded: bounded,
 	  max: max,
@@ -820,24 +829,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	//   min(scaleLimit) <= scale <= max(scaleLimit).
 	//
 	// When that happens, we want to
-	//   1) center the world within the limiting direction, and
+	//   1) allow for fitted panning with whitespace in the contained direction.
 	//   2) allow for fitted panning in the perpendicular direction.
 	//
 	// Here's a drawing of the situation
 	//
-	//           |---> midline                |---> midline
-	//           |                            |
-	//        ---|---                         |
-	//    ---|---|---|---              ---- --|-- ----
-	//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
-	//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
-	//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
-	//   |xxx|   |   |xxx|            |xxxx|  |  |xxxx|
-	//    ---|---|---|---C             ---- --|--W----C
-	//       |   |   |                        |
-	//        ---|---W                        |---> midline
-	//           |
-	//           |---> midline
+	//        -------
+	//    ---|-------|--              -- ------- ----
+	//   |xxx|       |xx|            |xx|       |xxxx|
+	//   |xxx|       |xx|            |xx|       |xxxx|
+	//   |xxx|       |xx|            |xx|       |xxxx|
+	//   |xxx|       |xx|            |xx|       |xxxx|
+	//    ---|-------|--C             -- -------W----C
+	//       |       |
+	//        -------W
 	//
 	//          (A)                          (B)
 	//
@@ -847,7 +852,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Thus, in this mode we have three limitting factors
 	//
 	//  1) The scale limit
-	//  2) The centered world within the whitespaced direction
+	//  2) The fitted panning in the contained direction
 	//  3) Fitted panning in the perpendicular direction
 	//
 	// ## The scale limit
@@ -862,19 +867,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//
 	//     k_limit = min(C_c_x / W_w_x, C_c_y / W_w_y) <= k
 	//
-	// ## Centered world about the whitespaced direction
+	// ## Fitted panning with whitespace in the contained direction
 	//
-	// When that happens, we fix the translation vector such that the world is
-	// centered in whitespaced direction.
+	// We get the same bounds we would get for unbounded panning except that the
+	// translation vector becomes strictly positive (instead of strictly negative)
 	//
 	// In other words,
 	//
-	//  (W_w_centered / 2)_c = C_c_centered / 2
-	//  (k * W_w_centered / 2 + t_c_centered) = C_c_centered / 2
-	//
-	// Which implies
-	//
-	//     t_c_centered = 0.5 * (C_c_centered - k * W_w_centered)
+	//  0 <= t_c_contained <= C_c_contained - k * W_w_contained)
 	//
 	// ## Fitted pan in the non-whitespaced direction
 	//
@@ -894,14 +894,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return fitNoWhitespace(state, options);
 	  }
 
-	  // t_c_centered = 0.5 * (C_c - k * W_w)
-	  var centered = _utilsVector2['default'].scale(0.5, _utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, worldSize)));
+	  // 0 <= t_c <= C_c - k * W_w
+	  var contained = _utilsVector2['default'].bounded(_utilsVector2['default'].zero, state.world_container, _utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, worldSize)));
 
 	  // C_c - k * W_w <= t_c <= 0
 	  var fitted = _utilsVector2['default'].bounded(_utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, worldSize)), state.world_container, _utilsVector2['default'].zero);
 
 	  var conditions = {
-	    centered: centered,
+	    contained: contained,
 	    fitted: fitted
 	  };
 
@@ -919,7 +919,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var scalelimit_x = containerSize[0] / worldSize[0];
 	  var scalelimit_y = containerSize[1] / worldSize[1];
-	  return scalelimit_x <= scalelimit_y ? ['fitted', 'centered'] : ['centered', 'fitted'];
+	  return scalelimit_x <= scalelimit_y ? ['fitted', 'contained'] : ['contained', 'fitted'];
 	}
 
 	function scaleLimit(_ref2) {
