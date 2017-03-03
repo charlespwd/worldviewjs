@@ -500,9 +500,19 @@ describe('Module: WorldView', () => {
       })
 
       // implying fit zoom = 2
-      view.setWorldSize(50, 50)
+      view.setWorldSize(50, 100)
       view.setContainerSize(100, 100)
       expect(view.state.scale).to.equal(2)
+      expect(view.isZoomedOut()).to.be.true
+
+      view.setZoom(3)
+      expect(view.state.scale).to.equal(3)
+      expect(view.isZoomedOut()).to.be.false
+
+      // implying fit zoom = 1
+      view.setOptions({ fitNoWhitespace: false });
+      view.setZoom(0.1)
+      expect(view.state.scale).to.equal(1)
       expect(view.isZoomedOut()).to.be.true
 
       view.setZoom(3)
