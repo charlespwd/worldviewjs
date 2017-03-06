@@ -237,116 +237,126 @@ function fitNoWhitespace(state, options) {
 
 // # Fitting with whitespace
 //
-// Fitting with whitespace is similar to the noWhitespace fitting except that it
-// allows for zooming in the zone where
-//   min(scaleLimit) <= scale <= max(scaleLimit).
+// Fitting with whitespace is similar to fitting without whitespace. In fact,
+// it's the very same strategy we're using EXCEPT that we enlarge the world (W) with
+// whitespace such that the transformed world (T) has the same aspect ratio as
+// the Container(C).
 //
-// When that happens, we want to
-//   1) allow for fitted panning with whitespace in the contained direction.
-//   2) allow for fitted panning in the perpendicular direction.
+// We enlarge the world with whitespace such that
+//   1) it is centered within the container
+//   2) it is only enlarged in one direction
 //
-// Here's a drawing of the situation
+// Here's an illustration
 //
-//        -------
-//    ---|-------|--              -- ------- ----
-//   |xxx|       |xx|            |xx|       |xxxx|
-//   |xxx|       |xx|            |xx|       |xxxx|
-//   |xxx|       |xx|            |xx|       |xxxx|
-//   |xxx|       |xx|            |xx|       |xxxx|
-//    ---|-------|--C             -- -------W----C
-//       |       |
-//        -------W
+//   ------
+//  |      |
+//  | 16x6 | World
+//  |      |
+//   ------W
 //
-//          (A)                          (B)
+//   ----------
+//  |          |
+//  |   13x3   | Container
+//  |          |
+//   ----------C
 //
-//  In (A), min(scaleLimit) < scale < max(scaleLimit)
-//  In (B), min(scaleLimit) = scale
+//   ----------
+//  |w|      |w|
+//  |w| 26x6 |w| Transformed World
+//  |w|      |w|
+//   --------W-T
 //
-// Thus, in this mode we have three limitting factors
+// Thus we have the three domains
+//  1) C = { x_c | 0 <= x_c <= C_c }
+//  2) W = { x_w | 0 <= x_w <= W_w }
+//  3) T = { x_t | 0 <= x_t <= T_t }
 //
-//  1) The scale limit
-//  2) The fitted panning in the contained direction
-//  3) Fitted panning in the perpendicular direction
+// And following transformations from one coordinate system to the other
 //
-// ## The scale limit
+//  4) x_t = x_w + dx_w
+//  5) x_c = k * x_w + t_c
 //
-// When the aspect ratio is not equal, we either have
+// Where C_c is the container size in the container coords
+// Where W_w is the world size in the world coords
+// Where T_t is the transformed world size in transformed world coords
+// Where {}_c, {}_w, {}_t define vectors in the container, world, and
+//  transformed world coordinate systems
+// Where dx_{} is the width of the whitespace
+// Where t_{} is the distance between the world and container origins
 //
-//     C_c_x > W_c_x  AND  C_c_y = W_c_y
-//     C_c_x = W_c_x  AND  C_c_y > W_c_y
+// If we say that the world is centered within the container, it means that
 //
-// Transforming the world size into world coordinates and solving for the
-// scale, we get
+//  6) 2 * dx_w + W_w = C_w
 //
-//     k_limit = min(C_c_x / W_w_x, C_c_y / W_w_y) <= k
+// Solving for dx_w, since C_w = C_c / klimit we get
+//  7) dx_w = 0.5 * (C_w - W_w)
+//     dx_w = 0.5 * (C_c / klimit - W_w)
 //
-// ## Fitted panning with whitespace in the contained direction
+// Transforming 3) into container and world coords we get
+//  8) T = { x_c | x_left_c <= x_c <= x_right_c }
+//       = { x_w | x_left_w <= x_c <= x_right_w }
 //
-// We get the same bounds we would get for unbounded panning except that the
-// translation vector becomes strictly positive (instead of strictly negative)
+// From 4) and 8), we get
+//  9) x_left_w  = 0   - dx_w   AND
+//     x_right_w = T_t - dx_w = W_w + dx_w
 //
-// In other words,
+// From 5) and 9), we get
+//  10) x_left_c  = k * (-dx_w)      + t_c  AND
+//      x_rigth_c = k * (W_w + dx_w) + t_c
 //
-//  0 <= t_c_contained <= C_c_contained - k * W_w_contained)
+// Since all points in the container must be contained by the transformed world, we have
+//  11) C ⊆ T
 //
-// ## Fitted pan in the non-whitespaced direction
+// Thus,
+//  12) x_left_c <= 0 <= x_c <= C_c <= x_right_c
 //
-// This is a copy paste of the condition for noWhitespace fitting. Therefore,
+// Which implies, from 10)
+//  13) -k * dx_w + t_c <= 0  AND
+//                  C_c <= k * (W_w + dx_w) + t_c
 //
-//     C_c_opposite - k * W_w_other <= t_c_other <= 0
+// Finally, solving for t_c, we get our translation limits
+//  14) t_c <= k * dx_w  AND
+//      t_c >= C_c - k * (W_w + dx_w)
 function fitWithWhitespace(state, options) {
   const { worldSize, containerSize } = state
   const limit = scaleLimit(state, Math.min)
+
+  // dx_w = 0.5 * (C_c / klimit - W_w)
+  const dx_w = vector.scale(
+    0.5,
+    vector.sub(
+      vector.scale(1 / limit, containerSize),
+      worldSize
+    )
+  );
+
   const scale = math.bounded(
     options.minZoom,
     Math.max(limit, state.scale),
     options.maxZoom
   )
 
-  // When the scale is greater than both limiting fitting scales, revert to
-  // noWhitespace fitting.
-  if (scale >= scaleLimit(state, Math.max)) {
-    return fitNoWhitespace(state, options)
-  }
-
-  // 0 <= t_c <= C_c - k * W_w
-  const contained = vector.bounded(
-    vector.zero,
-    state.world_container,
+  // C_c - k * (W_w + dx_w) <= t_c <= k * dx_w
+  const t_c = vector.bounded(
+    // C_c - k * (W_w + dx_w)
     vector.sub(
       containerSize,
-      vector.scale(scale, worldSize)
-    )
-  )
-
-  // C_c - k * W_w <= t_c <= 0
-  const fitted = vector.bounded(
-    vector.sub(
-      containerSize,
-      vector.scale(scale, worldSize)
+      vector.scale(
+        scale,
+        vector.add(worldSize, dx_w)
+      )
     ),
+    // t_c
     state.world_container,
-    vector.zero
+    // k * dx_w
+    vector.scale(scale, dx_w)
   )
-
-  const conditions = {
-    contained,
-    fitted,
-  }
 
   return ({
     ...state,
     scale,
-    world_container: limitingConditions(state).map((name, i) => conditions[name][i]),
+    world_container: t_c,
   })
-}
-
-function limitingConditions({ worldSize, containerSize }) {
-  const scalelimit_x = containerSize[0] / worldSize[0]
-  const scalelimit_y = containerSize[1] / worldSize[1]
-  return scalelimit_x <= scalelimit_y
-    ? ['fitted', 'contained']
-    : ['contained', 'fitted']
 }
 
 export function scaleLimit({ worldSize, containerSize }, comparator = Math.max) {

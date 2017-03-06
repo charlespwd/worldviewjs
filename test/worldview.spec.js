@@ -276,11 +276,11 @@ describe('Module: WorldView', () => {
       it('should allow you to pan in the limiting direction outside the world', () => { // eslint-disable-line
         // testing right limit
         view.panBy([10000, 0])
-        expect(view.state.world_container[0]).to.eql(25)
+        expect(view.state.world_container[0]).to.eql(37.5)
 
         // testing left limit
         view.panBy([-100000, 0])
-        expect(view.state.world_container[0]).to.eql(0)
+        expect(view.state.world_container[0]).to.eql(-12.5)
       })
 
       it('should allow you to pan within the fittable direction', () => {
