@@ -6,7 +6,7 @@ Status](https://travis-ci.org/charlespwd/worldviewjs.svg?branch=master)](https:/
 
 WorldViewJS is a tool for turning just about anything into a zoomable/pannable/rotatable map.
 
-It is tiny (2kB, including dependencies).
+It is tiny (3.3kB (gzipped), including dependencies).
 
 ## Installation
 
@@ -44,9 +44,18 @@ container.addEventListener('mousewheel', function(e) {
 
 [TODO]
 
-## Acknowledgements
-
-[TODO]
+* `constructor(update, options)`
+* `setDimensions(worldWidth, worldHeight, containerWidth, containerHeight)`
+* `setContainerOrigin(x_document, y_document)`
+* `resetContainerSize(containerWidth, containerHeight)`
+* `zoomBy(change, event)`
+* `panBy(dx, dy)`
+* `isZoomedOut()`
+* `zoomAtMouse(wheelDelta, event)`
+* `panStart(event)`
+* `panMove(event)`
+* `panEnd(event)`
+* `publish()`
 
 ## License
 
