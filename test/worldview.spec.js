@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import WorldView from '../src/worldview'
 import { expect } from 'chai'
 
@@ -479,7 +480,30 @@ describe('Module: WorldView', () => {
     })
   })
 
-  describe('Unit: isZoomedOut', () => {
+  describe('Unit: isZoomedOut(delta)', () => {
+    it('should return true when the zoom level is within delta of the minZoom (or smaller than)', () => {
+      const minZoom = 1
+      view = new WorldView({
+        minZoom: 1,
+      })
+
+      const delta = 0.01
+      view.setWorldSize(50, 50)
+      view.setContainerSize(50, 50)
+
+      view.setZoom(minZoom + delta + delta)
+      expect(view.isZoomedOut(delta)).to.be.false
+
+      view.setZoom(minZoom + delta)
+      expect(view.isZoomedOut(delta)).to.be.true
+
+      view.setZoom(minZoom + delta / 2)
+      expect(view.isZoomedOut(delta)).to.be.true
+
+      view.setZoom(minZoom)
+      expect(view.isZoomedOut(delta)).to.be.true
+    })
+
     it('should return true when the zoom level is equal to minZoom', () => {
       view = new WorldView({
         minZoom: 1.0,
@@ -510,7 +534,7 @@ describe('Module: WorldView', () => {
       expect(view.isZoomedOut()).to.be.false
 
       // implying fit zoom = 1
-      view.setOptions({ fitNoWhitespace: false });
+      view.setOptions({ fitNoWhitespace: false })
       view.setZoom(0.1)
       expect(view.state.scale).to.equal(1)
       expect(view.isZoomedOut()).to.be.true
