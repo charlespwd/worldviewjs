@@ -184,8 +184,23 @@ export default function WorldView(opts) {
     )
   }
 
-  function isZoomedOut() {
-    const limit = scaleLimit(state, options.fitNoWhitespace ? Math.max : Math.min);
-    return state.scale === options.minZoom || state.scale <= limit;
+  function isZoomedOut(tolerance = 0) {
+    const limit = scaleLimit(state, options.fitNoWhitespace ? Math.max : Math.min)
+    const isAtMinZoom = state.scale <= options.minZoom + tolerance
+    const isAtFitZoom = state.scale <= limit + tolerance
+
+    if (options.fit && options.minZoom) {
+      return isAtMinZoom || isAtFitZoom
+    }
+
+    if (options.fit) {
+      return isAtFitZoom
+    }
+
+    if (options.minZoom) {
+      return isAtMinZoom
+    }
+
+    return false
   }
 }

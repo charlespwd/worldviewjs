@@ -22,15 +22,46 @@ export default function PublicWorldView(render, opts) {
 
   /// Public API
   return {
-    setContainerOrigin: view.setContainerOrigin,
+    get state() {
+      return view.state;
+    },
+    get transform() {
+      return view.transform;
+    },
+    get options() {
+      return view.options;
+    },
+    get scale() {
+      return view.state.scale;
+    },
+    get translate() {
+      return view.state.world_container;
+    },
+    get offset() {
+      return view.state.container_document;
+    },
+    get rotation() {
+      return view.state.theta;
+    },
+    get worldSize() {
+      return view.state.worldSize;
+    },
+    get containerSize() {
+      return view.state.containerSize;
+    },
+    get theta() {
+      return view.state.theta;
+    },
     isZoomedOut,
+    setDimensions,
+    setOptions: view.setOptions,
+    setContainerOrigin: view.setContainerOrigin,
     zoomAtMouse,
     zoomBy,
     panBy,
     panStart,
     panMove,
     panEnd,
-    setDimensions,
     resetContainerSize,
     publish,
     debug: {
@@ -39,8 +70,8 @@ export default function PublicWorldView(render, opts) {
     },
   }
 
-  function isZoomedOut() {
-    return view.isZoomedOut();
+  function isZoomedOut(tolerance = 0) {
+    return view.isZoomedOut(tolerance);
   }
 
   function setDimensions(worldWidth, worldHeight, containerWidth, containerHeight) {
