@@ -442,26 +442,100 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  /// Public API
-	  return {
-	    setContainerOrigin: view.setContainerOrigin,
+	  return Object.defineProperties({
 	    isZoomedOut: isZoomedOut,
+	    setDimensions: setDimensions,
+	    setOptions: view.setOptions,
+	    setContainerOrigin: view.setContainerOrigin,
 	    zoomAtMouse: zoomAtMouse,
 	    zoomBy: zoomBy,
 	    panBy: panBy,
 	    panStart: panStart,
 	    panMove: panMove,
 	    panEnd: panEnd,
-	    setDimensions: setDimensions,
 	    resetContainerSize: resetContainerSize,
 	    publish: publish,
 	    debug: {
 	      decorate: decorate,
 	      view: view
 	    }
-	  };
+	  }, {
+	    state: {
+	      get: function get() {
+	        return view.state;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    transform: {
+	      get: function get() {
+	        return view.transform;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    options: {
+	      get: function get() {
+	        return view.options;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    scale: {
+	      get: function get() {
+	        return view.state.scale;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    translate: {
+	      get: function get() {
+	        return view.state.world_container;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    offset: {
+	      get: function get() {
+	        return view.state.container_document;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    rotation: {
+	      get: function get() {
+	        return view.state.theta;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    worldSize: {
+	      get: function get() {
+	        return view.state.worldSize;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    containerSize: {
+	      get: function get() {
+	        return view.state.containerSize;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    },
+	    theta: {
+	      get: function get() {
+	        return view.state.theta;
+	      },
+	      configurable: true,
+	      enumerable: true
+	    }
+	  });
 
 	  function isZoomedOut() {
-	    return view.isZoomedOut();
+	    var tolerance = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+	    return view.isZoomedOut(tolerance);
 	  }
 
 	  function setDimensions(worldWidth, worldHeight, containerWidth, containerHeight) {
@@ -1139,8 +1213,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function isZoomedOut() {
+	    var tolerance = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
 	    var limit = _transformWorld.scaleLimit(state, options.fitNoWhitespace ? Math.max : Math.min);
-	    return state.scale === options.minZoom || state.scale <= limit;
+	    var isAtMinZoom = state.scale <= options.minZoom + tolerance;
+	    var isAtFitZoom = state.scale <= limit + tolerance;
+
+	    if (options.fit && options.minZoom) {
+	      return isAtMinZoom || isAtFitZoom;
+	    }
+
+	    if (options.fit) {
+	      return isAtFitZoom;
+	    }
+
+	    if (options.minZoom) {
+	      return isAtMinZoom;
+	    }
+
+	    return false;
 	  }
 	}
 
