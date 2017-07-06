@@ -215,7 +215,7 @@ export const fit = (options = {}) => (state) => {
 // Therefore, C_c - z*W_w <= t_c <= 0
 function fitNoWhitespace(state, options) {
   const { worldSize, containerSize } = state
-  const limit = scaleLimit(state)
+  const limit = scaleLimit(state, options)
   const scale = math.bounded(
     options.minZoom,
     Math.max(limit, state.scale),
@@ -319,7 +319,7 @@ function fitNoWhitespace(state, options) {
 //      t_c >= C_c - k * (W_w + dx_w)
 function fitWithWhitespace(state, options) {
   const { worldSize, containerSize } = state
-  const limit = scaleLimit(state, Math.min)
+  const limit = scaleLimit(state, options, Math.min)
 
   // dx_w = 0.5 * (C_c / klimit - W_w)
   const dx_w = vector.scale(
@@ -359,8 +359,12 @@ function fitWithWhitespace(state, options) {
   })
 }
 
-export function scaleLimit({ worldSize, containerSize }, comparator = Math.max) {
-  const scalelimit_x = containerSize[0] / worldSize[0]
-  const scalelimit_y = containerSize[1] / worldSize[1]
+export function scaleLimit(
+  { worldSize, containerSize },
+  { fitMarginX = 0, fitMarginY = 0 } = {},
+  comparator = Math.max
+) {
+  const scalelimit_x = (containerSize[0] - 2 * fitMarginX) / worldSize[0]
+  const scalelimit_y = (containerSize[1] - 2 * fitMarginY) / worldSize[1]
   return comparator(scalelimit_x, scalelimit_y)
 }
