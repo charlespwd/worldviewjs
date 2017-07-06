@@ -52,7 +52,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -67,9 +67,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports['default'] = _publicApi2['default'];
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -120,9 +120,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	exports.ops = ops;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -186,9 +186,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  zero: zero
 	};
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -230,9 +230,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	exports.centerContainer_world = centerContainer_world;
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -292,9 +292,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	exports.fromDocumentToWorld = fromDocumentToWorld;
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -326,9 +326,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	exports.setState = setState;
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -400,9 +400,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  sub: sub
 	};
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -639,9 +639,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -888,7 +888,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var worldSize = state.worldSize;
 	  var containerSize = state.containerSize;
 
-	  var limit = scaleLimit(state);
+	  var limit = scaleLimit(state, options);
 	  var scale = math.bounded(options.minZoom, Math.max(limit, state.scale), options.maxZoom);
 	  return _extends({}, state, {
 	    scale: scale,
@@ -982,7 +982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var worldSize = state.worldSize;
 	  var containerSize = state.containerSize;
 
-	  var limit = scaleLimit(state, Math.min);
+	  var limit = scaleLimit(state, options, Math.min);
 
 	  // dx_w = 0.5 * (C_c / klimit - W_w)
 	  var dx_w = _utilsVector2['default'].scale(0.5, _utilsVector2['default'].sub(_utilsVector2['default'].scale(1 / limit, containerSize), worldSize));
@@ -1007,16 +1007,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	function scaleLimit(_ref) {
 	  var worldSize = _ref.worldSize;
 	  var containerSize = _ref.containerSize;
-	  var comparator = arguments.length <= 1 || arguments[1] === undefined ? Math.max : arguments[1];
 
-	  var scalelimit_x = containerSize[0] / worldSize[0];
-	  var scalelimit_y = containerSize[1] / worldSize[1];
+	  var _ref2 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	  var _ref2$fitMarginX = _ref2.fitMarginX;
+	  var fitMarginX = _ref2$fitMarginX === undefined ? 0 : _ref2$fitMarginX;
+	  var _ref2$fitMarginY = _ref2.fitMarginY;
+	  var fitMarginY = _ref2$fitMarginY === undefined ? 0 : _ref2$fitMarginY;
+	  var comparator = arguments.length <= 2 || arguments[2] === undefined ? Math.max : arguments[2];
+
+	  var scalelimit_x = (containerSize[0] - 2 * fitMarginX) / worldSize[0];
+	  var scalelimit_y = (containerSize[1] - 2 * fitMarginY) / worldSize[1];
 	  return comparator(scalelimit_x, scalelimit_y);
 	}
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1070,6 +1077,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Fit the world to the container so that no whitespace can
 	    // be visible
 	    fitNoWhitespace: true,
+
+	    // Force some whitespace to appear at min zoom around the world.
+	    // The margin is in the container's coordinate system units.
+	    fitMarginX: 0,
+	    firMarginY: 0,
 
 	    // Don't let the user zoom more than maxZoom
 	    maxZoom: undefined,
@@ -1215,7 +1227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function isZoomedOut() {
 	    var tolerance = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
-	    var limit = _transformWorld.scaleLimit(state, options.fitNoWhitespace ? Math.max : Math.min);
+	    var limit = _transformWorld.scaleLimit(state, options, options.fitNoWhitespace ? Math.max : Math.min);
 	    var isAtMinZoom = state.scale <= options.minZoom + tolerance;
 	    var isAtFitZoom = state.scale <= limit + tolerance;
 
@@ -1237,7 +1249,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = exports['default'];
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
