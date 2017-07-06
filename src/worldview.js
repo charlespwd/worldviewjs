@@ -44,6 +44,11 @@ export default function WorldView(opts) {
     // be visible
     fitNoWhitespace: true,
 
+    // Force some whitespace to appear at min zoom around the world.
+    // The margin is in the container's coordinate system units.
+    fitMarginX: 0,
+    firMarginY: 0,
+
     // Don't let the user zoom more than maxZoom
     maxZoom: undefined,
 
@@ -185,7 +190,7 @@ export default function WorldView(opts) {
   }
 
   function isZoomedOut(tolerance = 0) {
-    const limit = scaleLimit(state, options.fitNoWhitespace ? Math.max : Math.min)
+    const limit = scaleLimit(state, options, options.fitNoWhitespace ? Math.max : Math.min)
     const isAtMinZoom = state.scale <= options.minZoom + tolerance
     const isAtFitZoom = state.scale <= limit + tolerance
 
