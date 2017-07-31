@@ -1,6 +1,7 @@
 import WorldView from './worldview'
 import vector from './utils/vector'
 import { center_world } from './centers'
+import { scaleLimit } from './transform-world';
 
 const fromEventToVector = ({ pageX, pageY }) => [pageX, pageY]
 
@@ -51,6 +52,13 @@ export default function PublicWorldView(render, opts) {
     },
     get theta() {
       return view.state.theta;
+    },
+    get minZoom() {
+      return scaleLimit(
+        view.state,
+        view.options,
+        view.options.fitNoWhitespace ? Math.max : Math.min
+      );
     },
     isZoomedOut,
     setDimensions,
