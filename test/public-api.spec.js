@@ -30,7 +30,7 @@ describe('Module: PublicApi', () => {
     })
 
     renderSpy = sinon.spy()
-    const PublicWorldView = require('../src/index') // eslint-disable-line
+    const PublicWorldView = require('../src/index').default // eslint-disable-line
     view = new PublicWorldView(renderSpy)
   })
 
