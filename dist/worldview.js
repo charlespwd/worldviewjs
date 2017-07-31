@@ -56,16 +56,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _publicApi = __webpack_require__(7);
+	var _publicApi = __webpack_require__(8);
 
 	var _publicApi2 = _interopRequireDefault(_publicApi);
 
-	exports['default'] = _publicApi2['default'];
-	module.exports = exports['default'];
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _publicApi2.default;
 
 /***/ }),
 /* 1 */
@@ -73,37 +74,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	exports.__esModule = true;
-	var PI = Math.PI;
-	exports.PI = PI;
-	var sin = function sin(degrees) {
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var PI = exports.PI = Math.PI;
+	var sin = exports.sin = function sin(degrees) {
 	  return Math.sin(degrees / 180 * PI);
 	};
-	exports.sin = sin;
-	var cos = function cos(degrees) {
+	var cos = exports.cos = function cos(degrees) {
 	  return Math.cos(degrees / 180 * PI);
 	};
-	exports.cos = cos;
-	var avg = function avg(a, b) {
+	var avg = exports.avg = function avg(a, b) {
 	  return (a + b) / 2;
 	};
-	exports.avg = avg;
-	var delta = function delta(a, b) {
+	var delta = exports.delta = function delta(a, b) {
 	  return a - b;
 	};
-	exports.delta = delta;
-	var bounded = function bounded(lower, x) {
-	  if (lower === undefined) lower = -Infinity;
-	  var upper = arguments.length <= 2 || arguments[2] === undefined ? Infinity : arguments[2];
+	var bounded = exports.bounded = function bounded() {
+	  var lower = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : -Infinity;
+	  var x = arguments[1];
+	  var upper = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Infinity;
 	  return Math.min(upper, Math.max(lower, x));
 	};
-	exports.bounded = bounded;
-	var isBounded = function isBounded(lower, x, upper) {
+	var isBounded = exports.isBounded = function isBounded(lower, x, upper) {
 	  return lower <= x && x <= upper;
 	};
 
-	exports.isBounded = isBounded;
-	var ops = {
+	var ops = exports.ops = {
 	  '+': function _(a, b) {
 	    return a + b;
 	  },
@@ -118,7 +115,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  avg: avg
 	};
-	exports.ops = ops;
 
 /***/ }),
 /* 2 */
@@ -126,7 +122,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.abs = exports.zero = exports.normalize = exports.norm = exports.bounded = exports.max = exports.min = exports.dotProduct = exports.sub = exports.add = exports.scale = undefined;
 
 	var _math = __webpack_require__(1);
 
@@ -138,42 +137,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	var scale = function scale(k, v) {
+	var scale = exports.scale = function scale(k, v) {
 	  return v.map(function (x) {
 	    return k * x;
 	  });
 	};
-	exports.scale = scale;
-	var add = operate(_math.ops['+']);
-	exports.add = add;
-	var sub = operate(_math.ops['-']);
-	exports.sub = sub;
-	var dotProduct = operate(_math.ops['*']);
-	exports.dotProduct = dotProduct;
-	var min = operate(Math.min);
-	exports.min = min;
-	var max = operate(Math.max);
-	exports.max = max;
-	var bounded = function bounded(u, v, w) {
+	var add = exports.add = operate(_math.ops['+']);
+	var sub = exports.sub = operate(_math.ops['-']);
+	var dotProduct = exports.dotProduct = operate(_math.ops['*']);
+	var min = exports.min = operate(Math.min);
+	var max = exports.max = operate(Math.max);
+	var bounded = exports.bounded = function bounded(u, v, w) {
 	  return min(max(u, v), w);
 	};
-	exports.bounded = bounded;
-	var norm = function norm(v) {
+	var norm = exports.norm = function norm(v) {
 	  return Math.sqrt(dotProduct(v, v).reduce(_math.ops['+']));
 	};
-	exports.norm = norm;
-	var normalize = function normalize(v) {
+	var normalize = exports.normalize = function normalize(v) {
 	  return scale(1 / norm(v), v);
 	};
-	exports.normalize = normalize;
-	var zero = Object.freeze([0, 0]);
-	exports.zero = zero;
-	var abs = function abs(v) {
+	var zero = exports.zero = Object.freeze([0, 0]);
+	var abs = exports.abs = function abs(v) {
 	  return v.map(Math.abs);
 	};
 
-	exports.abs = abs;
-	exports['default'] = {
+	exports.default = {
 	  abs: abs,
 	  add: add,
 	  bounded: bounded,
@@ -192,43 +180,40 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.centerContainer_world = exports.centerContainer_document = exports.center_container = exports.centerWorld_container = exports.centerWorld_document = exports.center_world = undefined;
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	var _vector = __webpack_require__(2);
 
-	var _utilsVector = __webpack_require__(2);
-
-	var _utilsVector2 = _interopRequireDefault(_utilsVector);
+	var _vector2 = _interopRequireDefault(_vector);
 
 	var _transformVector = __webpack_require__(4);
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	/// Various centers
-	var center_world = function center_world(state) {
-	  return _utilsVector2['default'].scale(1 / 2, state.worldSize);
+	var center_world = exports.center_world = function center_world(state) {
+	  return _vector2.default.scale(1 / 2, state.worldSize);
 	};
-	exports.center_world = center_world;
-	var centerWorld_document = function centerWorld_document(state) {
-	  return _transformVector.fromWorldToDocument(state, center_world(state));
+	var centerWorld_document = exports.centerWorld_document = function centerWorld_document(state) {
+	  return (0, _transformVector.fromWorldToDocument)(state, center_world(state));
 	};
-	exports.centerWorld_document = centerWorld_document;
-	var centerWorld_container = function centerWorld_container(state) {
-	  return _transformVector.fromWorldToContainer(state, center_world(state));
+	var centerWorld_container = exports.centerWorld_container = function centerWorld_container(state) {
+	  return (0, _transformVector.fromWorldToContainer)(state, center_world(state));
 	};
-	exports.centerWorld_container = centerWorld_container;
-	var center_container = function center_container(state) {
-	  return _utilsVector2['default'].scale(1 / 2, state.containerSize);
+	var center_container = exports.center_container = function center_container(state) {
+	  return _vector2.default.scale(1 / 2, state.containerSize);
 	};
 
-	exports.center_container = center_container;
-	var centerContainer_document = function centerContainer_document(state) {
-	  return _transformVector.fromContainerToDocument(state, center_container(state));
+	var centerContainer_document = exports.centerContainer_document = function centerContainer_document(state) {
+	  return (0, _transformVector.fromContainerToDocument)(state, center_container(state));
 	};
 
-	exports.centerContainer_document = centerContainer_document;
-	var centerContainer_world = function centerContainer_world(state) {
-	  return _transformVector.fromContainerToWorld(state, center_container(state));
+	var centerContainer_world = exports.centerContainer_world = function centerContainer_world(state) {
+	  return (0, _transformVector.fromContainerToWorld)(state, center_container(state));
 	};
-	exports.centerContainer_world = centerContainer_world;
 
 /***/ }),
 /* 4 */
@@ -236,462 +221,113 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.fromDocumentToWorld = exports.fromWorldToDocument = exports.fromContainerToWorld = exports.fromWorldToContainer = exports.fromContainerToDocument = exports.fromDocumentToContainer = undefined;
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	var _vector = __webpack_require__(2);
 
-	var _utilsVector = __webpack_require__(2);
+	var _vector2 = _interopRequireDefault(_vector);
 
-	var _utilsVector2 = _interopRequireDefault(_utilsVector);
+	var _matrix = __webpack_require__(7);
 
-	var _utilsMatrix = __webpack_require__(6);
+	var _matrix2 = _interopRequireDefault(_matrix);
 
-	var _utilsMatrix2 = _interopRequireDefault(_utilsMatrix);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	// x_d = x_c - t_d
-	var fromDocumentToContainer = function fromDocumentToContainer(_ref, vector_document) {
+	var fromDocumentToContainer = exports.fromDocumentToContainer = function fromDocumentToContainer(_ref, vector_document) {
 	  var container_document = _ref.container_document;
-	  return _utilsVector2['default'].sub(vector_document, container_document);
+	  return _vector2.default.sub(vector_document, container_document);
 	};
 
-	exports.fromDocumentToContainer = fromDocumentToContainer;
 	// x_c = x_d + t_d
-	var fromContainerToDocument = function fromContainerToDocument(_ref2, vector_container) {
+	var fromContainerToDocument = exports.fromContainerToDocument = function fromContainerToDocument(_ref2, vector_container) {
 	  var container_document = _ref2.container_document;
-	  return _utilsVector2['default'].add(vector_container, container_document);
+	  return _vector2.default.add(vector_container, container_document);
 	};
 
-	exports.fromContainerToDocument = fromContainerToDocument;
 	// x_c = z*R*x_w + t_c
-	var fromWorldToContainer = function fromWorldToContainer(_ref3, vector_world) {
-	  var scale = _ref3.scale;
-	  var theta = _ref3.theta;
-	  var world_container = _ref3.world_container;
-	  return _utilsVector2['default'].add(_utilsVector2['default'].scale(scale, _utilsMatrix2['default'].product(_utilsMatrix.R(theta), vector_world)), world_container);
+	var fromWorldToContainer = exports.fromWorldToContainer = function fromWorldToContainer(_ref3, vector_world) {
+	  var scale = _ref3.scale,
+	      theta = _ref3.theta,
+	      world_container = _ref3.world_container;
+	  return _vector2.default.add(_vector2.default.scale(scale, _matrix2.default.product((0, _matrix.R)(theta), vector_world)), world_container);
 	};
 
-	exports.fromWorldToContainer = fromWorldToContainer;
 	// x_w = 1/z*(R^-1)(x_c - t_c)
-	var fromContainerToWorld = function fromContainerToWorld(_ref4, vector_container) {
-	  var scale = _ref4.scale;
-	  var theta = _ref4.theta;
-	  var world_container = _ref4.world_container;
-	  return _utilsVector2['default'].scale(1 / scale, _utilsMatrix2['default'].product(_utilsMatrix.R(-theta), _utilsVector2['default'].sub(vector_container, world_container)));
+	var fromContainerToWorld = exports.fromContainerToWorld = function fromContainerToWorld(_ref4, vector_container) {
+	  var scale = _ref4.scale,
+	      theta = _ref4.theta,
+	      world_container = _ref4.world_container;
+	  return _vector2.default.scale(1 / scale, _matrix2.default.product((0, _matrix.R)(-theta), _vector2.default.sub(vector_container, world_container)));
 	};
 
-	exports.fromContainerToWorld = fromContainerToWorld;
-	var fromWorldToDocument = function fromWorldToDocument(state, vector_world) {
+	var fromWorldToDocument = exports.fromWorldToDocument = function fromWorldToDocument(state, vector_world) {
 	  var vector_container = fromWorldToContainer(state, vector_world);
 	  return fromContainerToDocument(state, vector_container);
 	};
 
-	exports.fromWorldToDocument = fromWorldToDocument;
-	var fromDocumentToWorld = function fromDocumentToWorld(state, vector_document) {
+	var fromDocumentToWorld = exports.fromDocumentToWorld = function fromDocumentToWorld(state, vector_document) {
 	  var vector_container = fromDocumentToContainer(state, vector_document);
 	  return fromContainerToWorld(state, vector_container);
 	};
-	exports.fromDocumentToWorld = fromDocumentToWorld;
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	exports.__esModule = true;
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var flow = function flow() {
-	  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	    args[_key] = arguments[_key];
-	  }
-
-	  return function (x) {
-	    var f = args[0];
-	    var rest = args.slice(1);
-
-	    if (f) {
-	      return flow.apply(undefined, rest)(f(x));
-	    }
-	    return x;
-	  };
-	};
-
-	exports.flow = flow;
-	var setState = function setState(state, key, value) {
-	  var _extends2;
-
-	  return _extends({}, state, (_extends2 = {}, _extends2[key] = value, _extends2));
-	};
-	exports.setState = setState;
-
-/***/ }),
-/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	exports.__esModule = true;
-
-	var _math = __webpack_require__(1);
-
-	var isVector = function isVector(x) {
-	  return x instanceof Array && typeof x[0] === 'number';
-	};
-	var isMatrix = function isMatrix(x) {
-	  return x instanceof Array && x[0] instanceof Array && typeof x[0][0] === 'number';
-	};
-
-	// Rotation Matrix
-	var R = function R(theta) {
-	  return [[_math.cos(theta), -_math.sin(theta)], [_math.sin(theta), _math.cos(theta)]];
-	};
-
-	exports.R = R;
-	var scale = function scale(k, A) {
-	  return A.map(function (row) {
-	    return row.map(function (elem) {
-	      return k * elem;
-	    });
-	  });
-	};
-
-	exports.scale = scale;
-	var product = function product(A, B) {
-	  if (isVector(B)) {
-	    return [A[0][0] * B[0] + A[0][1] * B[1], A[1][0] * B[0] + A[1][1] * B[1]];
-	  } else if (isMatrix(B)) {
-	    var _ret = (function () {
-	      var result = [[undefined, undefined], [undefined, undefined]];
-	      return {
-	        v: result.map(function (_, i) {
-	          return result.map(function (__, j) {
-	            return A[i][0] * B[0][j] + A[i][1] * B[1][j];
-	          });
-	        })
-	      };
-	    })();
-
-	    if (typeof _ret === 'object') return _ret.v;
-	  }
-	  throw new Error('What are you trying to do?');
-	};
-
-	exports.product = product;
-	var matrixOperation = function matrixOperation(A, B, op) {
-	  return [[op(A[0][0], B[0][0]), op(A[0][1], B[0][1])], [op(A[1][0], B[1][0]), op(A[1][1], B[1][1])]];
-	};
-
-	var sub = function sub(A, B) {
-	  return matrixOperation(A, B, _math.ops['-']);
-	};
-	exports.sub = sub;
-	var add = function add(A, B) {
-	  return matrixOperation(A, B, _math.ops['+']);
-	};
-
-	exports.add = add;
-	exports['default'] = {
-	  R: R,
-	  add: add,
-	  product: product,
-	  scale: scale,
-	  sub: sub
-	};
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	exports.__esModule = true;
-	exports['default'] = PublicWorldView;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _worldview = __webpack_require__(9);
-
-	var _worldview2 = _interopRequireDefault(_worldview);
-
-	var _utilsVector = __webpack_require__(2);
-
-	var _utilsVector2 = _interopRequireDefault(_utilsVector);
-
-	var _centers = __webpack_require__(3);
-
-	var fromEventToVector = function fromEventToVector(_ref) {
-	  var pageX = _ref.pageX;
-	  var pageY = _ref.pageY;
-	  return [pageX, pageY];
-	};
-
-	var validateEventPosition = function validateEventPosition(method, e) {
-	  if (typeof e.pageX !== 'number' || typeof e.pageY !== 'number') {
-	    throw new Error('Trying to ' + method + ' without { pageX, pageY }. Check your event handler.');
-	  }
-	};
-
-	function PublicWorldView(render, opts) {
-	  var view = new _worldview2['default'](opts);
-	  var state = {
-	    isPanning: false,
-	    panStart: null,
-	    panEnd: null
-	  };
-
-	  /// Public API
-	  return Object.defineProperties({
-	    isZoomedOut: isZoomedOut,
-	    setDimensions: setDimensions,
-	    setOptions: view.setOptions,
-	    setContainerOrigin: view.setContainerOrigin,
-	    zoomAtMouse: zoomAtMouse,
-	    zoomBy: zoomBy,
-	    panBy: panBy,
-	    panStart: panStart,
-	    panMove: panMove,
-	    panEnd: panEnd,
-	    resetContainerSize: resetContainerSize,
-	    publish: publish,
-	    debug: {
-	      decorate: decorate,
-	      view: view
-	    }
-	  }, {
-	    state: {
-	      get: function get() {
-	        return view.state;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    transform: {
-	      get: function get() {
-	        return view.transform;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    options: {
-	      get: function get() {
-	        return view.options;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    scale: {
-	      get: function get() {
-	        return view.state.scale;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    translate: {
-	      get: function get() {
-	        return view.state.world_container;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    offset: {
-	      get: function get() {
-	        return view.state.container_document;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    rotation: {
-	      get: function get() {
-	        return view.state.theta;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    worldSize: {
-	      get: function get() {
-	        return view.state.worldSize;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    containerSize: {
-	      get: function get() {
-	        return view.state.containerSize;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    theta: {
-	      get: function get() {
-	        return view.state.theta;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    }
-	  });
-
-	  function isZoomedOut() {
-	    var tolerance = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-
-	    return view.isZoomedOut(tolerance);
-	  }
-
-	  function setDimensions(worldWidth, worldHeight, containerWidth, containerHeight) {
-	    view.setWorldSize(worldWidth, worldHeight);
-	    view.setContainerSize(containerWidth, containerHeight);
-	    view.resetZoom();
-	    publish();
-	  }
-
-	  function resetContainerSize(containerWidth, containerHeight) {
-	    view.resetContainerSize(containerWidth, containerHeight);
-	    publish();
-	  }
-
-	  function zoomAtMouse(wheelDelta) {
-	    var e = arguments.length <= 1 || arguments[1] === undefined ? { pageX: undefined, pageY: undefined } : arguments[1];
-
-	    var change = wheelDelta > 0 ? 1.03 : 0.97; // %
-	    var pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined;
-	    view.zoomBy(change, pointer_document);
-	    publish();
-	  }
-
-	  // Where change is the ratio between the previous and the future scale level
-	  function zoomBy(change) {
-	    var e = arguments.length <= 1 || arguments[1] === undefined ? { pageX: undefined, pageY: undefined } : arguments[1];
-
-	    var pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined;
-	    view.zoomBy(change, pointer_document);
-	    publish();
-	  }
-
-	  function panStart() {
-	    var e = arguments.length <= 0 || arguments[0] === undefined ? { pageX: undefined, pageY: undefined } : arguments[0];
-
-	    validateEventPosition('panStart', e);
-	    state.isPanning = true;
-	    state.panStart = [e.pageX, e.pageY];
-	  }
-
-	  function panMove() {
-	    var e = arguments.length <= 0 || arguments[0] === undefined ? { pageX: undefined, pageY: undefined } : arguments[0];
-
-	    if (!state.isPanning) return;
-	    validateEventPosition('panMove', e);
-	    state.panEnd = [e.pageX, e.pageY];
-	    view.panBy(_utilsVector2['default'].sub(state.panEnd, state.panStart));
-	    state.panStart = state.panEnd;
-	    publish();
-	  }
-
-	  function panEnd() {
-	    var e = arguments.length <= 0 || arguments[0] === undefined ? { pageX: undefined, pageY: undefined } : arguments[0];
-
-	    if (!state.isPanning) return;
-	    validateEventPosition('panEnd', e);
-	    state.isPanning = false;
-	    state.panEnd = [e.pageX, e.pageY];
-	  }
-
-	  function panBy(dx, dy) {
-	    if (dx === undefined || dy === undefined) {
-	      throw new Error('InvalidArguments: panBy(dx, dy) called with ' + dx + ', ' + dy);
-	    }
-	    view.panBy([dx, dy]);
-	    publish();
-	  }
-
-	  function decorate(_ref2) {
-	    var translate = _ref2.translate;
-	    var rotate = _ref2.rotate;
-	    var scale = _ref2.scale;
-
-	    // The default transform-origin for divs is '50% 50%'. The math in this
-	    // library assumes that the origin is located at the top left corner.
-	    var transformFromTopLeft = function transformFromTopLeft(transform, _ref3) {
-	      var cx = _ref3[0];
-	      var cy = _ref3[1];
-	      return '\n      translate(' + -cx + 'px, ' + -cy + 'px)\n      ' + transform + '\n      translate(' + cx + 'px, ' + cy + 'px)\n    ';
-	    };
-
-	    return {
-	      translate: translate,
-	      rotate: rotate,
-	      scale: scale,
-
-	      // transformTopLeft assumes transform-origin is 'top left', default in svg
-	      transformTopLeft: '\n        translate(' + translate[0] + 'px, ' + translate[1] + 'px)\n        rotate(' + rotate + ')\n        scale(' + scale + ')\n      ',
-
-	      // transform5050 assumes transform-origin is '50% 50%', default for divs
-	      transform5050: transformFromTopLeft('\n          translate(' + translate[0] + 'px, ' + translate[1] + 'px)\n          rotate(' + rotate + ')\n          scale(' + scale + ')', _centers.center_world(view.state))
-	    };
-	  }
-
-	  function publish() {
-	    var result = decorate(view.transform);
-	    render(result);
-	    return result;
-	  }
-	}
-
-	module.exports = exports['default'];
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.fit = exports.statelessRotateBy = exports.statelessPanBy = exports.statelessZoom = exports.reduce = exports.identity = exports.set = undefined;
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	exports.scaleLimit = scaleLimit;
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	var _vector = __webpack_require__(2);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	var _vector2 = _interopRequireDefault(_vector);
 
-	var _utilsVector = __webpack_require__(2);
+	var _matrix = __webpack_require__(7);
 
-	var _utilsVector2 = _interopRequireDefault(_utilsVector);
+	var _matrix2 = _interopRequireDefault(_matrix);
 
-	var _utilsMatrix = __webpack_require__(6);
+	var _functional = __webpack_require__(6);
 
-	var _utilsMatrix2 = _interopRequireDefault(_utilsMatrix);
+	var _math = __webpack_require__(1);
 
-	var _utilsFunctional = __webpack_require__(5);
+	var math = _interopRequireWildcard(_math);
 
-	var _utilsMath = __webpack_require__(1);
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	var math = _interopRequireWildcard(_utilsMath);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	// Transformations are simple WorldState -> WorldState mappings.
 	// The simplest world transformation: change a value.
-	var set = function set(key, value) {
+	var set = exports.set = function set(key, value) {
 	  return function (state) {
-	    return _utilsFunctional.setState(state, key, value);
+	    return (0, _functional.setState)(state, key, value);
 	  };
 	};
-	exports.set = set;
-	var identity = function identity(state) {
+	var identity = exports.identity = function identity(state) {
 	  return state;
 	};
 
-	exports.identity = identity;
 	// Give me a set of transformations and a state and I'll give you a
 	// new state. Transformations are composable.
-	var reduce = function reduce(transforms, initialState) {
-	  if (transforms === undefined) transforms = [];
+	var reduce = exports.reduce = function reduce() {
+	  var transforms = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	  var initialState = arguments[1];
 	  return [].concat(transforms).reduce(function (state, transform) {
 	    return transform(state);
 	  }, initialState);
 	};
 
-	exports.reduce = reduce;
 	// # Fixed point zoom transformation
 	// For {}_i and {}_f denotes initial and final transformation, we have
 	//
@@ -718,11 +354,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	//
 	// And finally
 	//   t_c_f = p_c + z_f / z_i * (t_c_i - p_c)
-	var statelessZoom = function statelessZoom(zoom_f, pointer_container) {
+	var statelessZoom = exports.statelessZoom = function statelessZoom(zoom_f, pointer_container) {
 	  return function (state) {
 	    var zoom_i = state.scale;
 	    var world_container_i = state.world_container;
-	    var world_container_f = _utilsVector2['default'].add(pointer_container, _utilsVector2['default'].scale(zoom_f / zoom_i, _utilsVector2['default'].sub(world_container_i, pointer_container)));
+	    var world_container_f = _vector2.default.add(pointer_container, _vector2.default.scale(zoom_f / zoom_i, _vector2.default.sub(world_container_i, pointer_container)));
 
 	    return _extends({}, state, {
 	      world_container: world_container_f,
@@ -731,7 +367,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	exports.statelessZoom = statelessZoom;
 	// # Fixed point pan transformation
 	// For {}_i and {}_f denotes initial and final transformation, we have
 	//
@@ -757,10 +392,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	//
 	// Finally, from (8) and (2)
 	//   t_c_f = ∆p_c + t_c_i
-	var statelessPanBy = function statelessPanBy(translation_container) {
+	var statelessPanBy = exports.statelessPanBy = function statelessPanBy(translation_container) {
 	  return function (state) {
 	    var world_container_i = state.world_container;
-	    var world_container_f = _utilsVector2['default'].add(translation_container, world_container_i);
+	    var world_container_f = _vector2.default.add(translation_container, world_container_i);
 
 	    return _extends({}, state, {
 	      world_container: world_container_f
@@ -768,7 +403,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	exports.statelessPanBy = statelessPanBy;
 	/// Fixed point rotation transformation
 	// For {}_i and {}_f denotes initial and final transformation, we have
 	//
@@ -792,13 +426,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	//
 	// Finally, from (6) and (7), we obtain
 	//   t_c_f = p_c - R(theta_f) * R(-theta_i) * (p_c - t_c_i)
-	var statelessRotateBy = function statelessRotateBy(degrees) {
-	  var pivot_container = arguments.length <= 1 || arguments[1] === undefined ? [0, 0] : arguments[1];
+	var statelessRotateBy = exports.statelessRotateBy = function statelessRotateBy(degrees) {
+	  var pivot_container = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
 	  return function (state) {
 	    var theta_i = state.theta;
 	    var theta_f = state.theta + degrees;
 	    var world_container_i = state.world_container;
-	    var world_container_f = _utilsVector2['default'].sub(pivot_container, _utilsMatrix2['default'].product(_utilsMatrix2['default'].product(_utilsMatrix.R(theta_f), _utilsMatrix.R(-theta_i)), _utilsVector2['default'].sub(pivot_container, world_container_i)));
+	    var world_container_f = _vector2.default.sub(pivot_container, _matrix2.default.product(_matrix2.default.product((0, _matrix.R)(theta_f), (0, _matrix.R)(-theta_i)), _vector2.default.sub(pivot_container, world_container_i)));
 
 	    return _extends({}, state, {
 	      theta: theta_f,
@@ -807,9 +441,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	exports.statelessRotateBy = statelessRotateBy;
-	var fit = function fit() {
-	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	var fit = exports.fit = function fit() {
+	  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	  return function (state) {
 	    if (options.fitNoWhitespace) {
 	      return fitNoWhitespace(state, options);
@@ -819,7 +452,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	exports.fit = fit;
 	// # Fitting without whitespace
 	// We have two limits, the first one is on the scale, the second one is on the
 	// translation vector.
@@ -885,14 +517,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//
 	// Therefore, C_c - z*W_w <= t_c <= 0
 	function fitNoWhitespace(state, options) {
-	  var worldSize = state.worldSize;
-	  var containerSize = state.containerSize;
+	  var worldSize = state.worldSize,
+	      containerSize = state.containerSize;
 
 	  var limit = scaleLimit(state, options);
 	  var scale = math.bounded(options.minZoom, Math.max(limit, state.scale), options.maxZoom);
 	  return _extends({}, state, {
 	    scale: scale,
-	    world_container: _utilsVector2['default'].bounded(_utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, worldSize)), state.world_container, _utilsVector2['default'].zero)
+	    world_container: _vector2.default.bounded(_vector2.default.sub(containerSize, _vector2.default.scale(scale, worldSize)), state.world_container, _vector2.default.zero)
 	  });
 	}
 
@@ -979,24 +611,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	//  14) t_c <= k * dx_w  AND
 	//      t_c >= C_c - k * (W_w + dx_w)
 	function fitWithWhitespace(state, options) {
-	  var worldSize = state.worldSize;
-	  var containerSize = state.containerSize;
+	  var worldSize = state.worldSize,
+	      containerSize = state.containerSize;
 
 	  var limit = scaleLimit(state, options, Math.min);
 
 	  // dx_w = 0.5 * (C_c / klimit - W_w)
-	  var dx_w = _utilsVector2['default'].scale(0.5, _utilsVector2['default'].sub(_utilsVector2['default'].scale(1 / limit, containerSize), worldSize));
+	  var dx_w = _vector2.default.scale(0.5, _vector2.default.sub(_vector2.default.scale(1 / limit, containerSize), worldSize));
 
 	  var scale = math.bounded(options.minZoom, Math.max(limit, state.scale), options.maxZoom);
 
 	  // C_c - k * (W_w + dx_w) <= t_c <= k * dx_w
-	  var t_c = _utilsVector2['default'].bounded(
+	  var t_c = _vector2.default.bounded(
 	  // C_c - k * (W_w + dx_w)
-	  _utilsVector2['default'].sub(containerSize, _utilsVector2['default'].scale(scale, _utilsVector2['default'].add(worldSize, dx_w))),
+	  _vector2.default.sub(containerSize, _vector2.default.scale(scale, _vector2.default.add(worldSize, dx_w))),
 	  // t_c
 	  state.world_container,
 	  // k * dx_w
-	  _utilsVector2['default'].scale(scale, dx_w));
+	  _vector2.default.scale(scale, dx_w));
 
 	  return _extends({}, state, {
 	    scale: scale,
@@ -1005,20 +637,329 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function scaleLimit(_ref) {
-	  var worldSize = _ref.worldSize;
-	  var containerSize = _ref.containerSize;
+	  var worldSize = _ref.worldSize,
+	      containerSize = _ref.containerSize;
 
-	  var _ref2 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	  var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	      _ref2$fitMarginX = _ref2.fitMarginX,
+	      fitMarginX = _ref2$fitMarginX === undefined ? 0 : _ref2$fitMarginX,
+	      _ref2$fitMarginY = _ref2.fitMarginY,
+	      fitMarginY = _ref2$fitMarginY === undefined ? 0 : _ref2$fitMarginY;
 
-	  var _ref2$fitMarginX = _ref2.fitMarginX;
-	  var fitMarginX = _ref2$fitMarginX === undefined ? 0 : _ref2$fitMarginX;
-	  var _ref2$fitMarginY = _ref2.fitMarginY;
-	  var fitMarginY = _ref2$fitMarginY === undefined ? 0 : _ref2$fitMarginY;
-	  var comparator = arguments.length <= 2 || arguments[2] === undefined ? Math.max : arguments[2];
+	  var comparator = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Math.max;
 
 	  var scalelimit_x = (containerSize[0] - 2 * fitMarginX) / worldSize[0];
 	  var scalelimit_y = (containerSize[1] - 2 * fitMarginY) / worldSize[1];
 	  return comparator(scalelimit_x, scalelimit_y);
+	}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	var flow = exports.flow = function flow() {
+	  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	    args[_key] = arguments[_key];
+	  }
+
+	  return function (x) {
+	    var f = args[0],
+	        rest = args.slice(1);
+
+	    if (f) {
+	      return flow.apply(undefined, _toConsumableArray(rest))(f(x));
+	    }
+	    return x;
+	  };
+	};
+
+	var setState = exports.setState = function setState(state, key, value) {
+	  return _extends({}, state, _defineProperty({}, key, value));
+	};
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.add = exports.sub = exports.product = exports.scale = exports.R = undefined;
+
+	var _math = __webpack_require__(1);
+
+	var isVector = function isVector(x) {
+	  return x instanceof Array && typeof x[0] === 'number';
+	};
+	var isMatrix = function isMatrix(x) {
+	  return x instanceof Array && x[0] instanceof Array && typeof x[0][0] === 'number';
+	};
+
+	// Rotation Matrix
+	var R = exports.R = function R(theta) {
+	  return [[(0, _math.cos)(theta), -(0, _math.sin)(theta)], [(0, _math.sin)(theta), (0, _math.cos)(theta)]];
+	};
+
+	var scale = exports.scale = function scale(k, A) {
+	  return A.map(function (row) {
+	    return row.map(function (elem) {
+	      return k * elem;
+	    });
+	  });
+	};
+
+	var product = exports.product = function product(A, B) {
+	  if (isVector(B)) {
+	    return [A[0][0] * B[0] + A[0][1] * B[1], A[1][0] * B[0] + A[1][1] * B[1]];
+	  } else if (isMatrix(B)) {
+	    var result = [[undefined, undefined], [undefined, undefined]];
+	    return result.map(function (_, i) {
+	      return result.map(function (__, j) {
+	        return A[i][0] * B[0][j] + A[i][1] * B[1][j];
+	      });
+	    });
+	  }
+	  throw new Error('What are you trying to do?');
+	};
+
+	var matrixOperation = function matrixOperation(A, B, op) {
+	  return [[op(A[0][0], B[0][0]), op(A[0][1], B[0][1])], [op(A[1][0], B[1][0]), op(A[1][1], B[1][1])]];
+	};
+
+	var sub = exports.sub = function sub(A, B) {
+	  return matrixOperation(A, B, _math.ops['-']);
+	};
+	var add = exports.add = function add(A, B) {
+	  return matrixOperation(A, B, _math.ops['+']);
+	};
+
+	exports.default = {
+	  R: R,
+	  add: add,
+	  product: product,
+	  scale: scale,
+	  sub: sub
+	};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+	exports.default = PublicWorldView;
+
+	var _worldview = __webpack_require__(9);
+
+	var _worldview2 = _interopRequireDefault(_worldview);
+
+	var _vector = __webpack_require__(2);
+
+	var _vector2 = _interopRequireDefault(_vector);
+
+	var _centers = __webpack_require__(3);
+
+	var _transformWorld = __webpack_require__(5);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var fromEventToVector = function fromEventToVector(_ref) {
+	  var pageX = _ref.pageX,
+	      pageY = _ref.pageY;
+	  return [pageX, pageY];
+	};
+
+	var validateEventPosition = function validateEventPosition(method, e) {
+	  if (typeof e.pageX !== 'number' || typeof e.pageY !== 'number') {
+	    throw new Error('Trying to ' + method + ' without { pageX, pageY }. Check your event handler.');
+	  }
+	};
+
+	function PublicWorldView(render, opts) {
+	  var view = new _worldview2.default(opts);
+	  var state = {
+	    isPanning: false,
+	    panStart: null,
+	    panEnd: null
+
+	    /// Public API
+	  };return {
+	    get state() {
+	      return view.state;
+	    },
+	    get transform() {
+	      return view.transform;
+	    },
+	    get options() {
+	      return view.options;
+	    },
+	    get scale() {
+	      return view.state.scale;
+	    },
+	    get translate() {
+	      return view.state.world_container;
+	    },
+	    get offset() {
+	      return view.state.container_document;
+	    },
+	    get rotation() {
+	      return view.state.theta;
+	    },
+	    get worldSize() {
+	      return view.state.worldSize;
+	    },
+	    get containerSize() {
+	      return view.state.containerSize;
+	    },
+	    get theta() {
+	      return view.state.theta;
+	    },
+	    get minZoom() {
+	      return (0, _transformWorld.scaleLimit)(view.state, view.options, view.options.fitNoWhitespace ? Math.max : Math.min);
+	    },
+	    isZoomedOut: isZoomedOut,
+	    setDimensions: setDimensions,
+	    setOptions: view.setOptions,
+	    setContainerOrigin: view.setContainerOrigin,
+	    zoomAtMouse: zoomAtMouse,
+	    zoomBy: zoomBy,
+	    panBy: panBy,
+	    panStart: panStart,
+	    panMove: panMove,
+	    panEnd: panEnd,
+	    resetContainerSize: resetContainerSize,
+	    publish: publish,
+	    debug: {
+	      decorate: decorate,
+	      view: view
+	    }
+	  };
+
+	  function isZoomedOut() {
+	    var tolerance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+
+	    return view.isZoomedOut(tolerance);
+	  }
+
+	  function setDimensions(worldWidth, worldHeight, containerWidth, containerHeight) {
+	    view.setWorldSize(worldWidth, worldHeight);
+	    view.setContainerSize(containerWidth, containerHeight);
+	    view.resetZoom();
+	    publish();
+	  }
+
+	  function resetContainerSize(containerWidth, containerHeight) {
+	    view.resetContainerSize(containerWidth, containerHeight);
+	    publish();
+	  }
+
+	  function zoomAtMouse(wheelDelta) {
+	    var e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { pageX: undefined, pageY: undefined };
+
+	    var change = wheelDelta > 0 ? 1.03 : 0.97; // %
+	    var pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined;
+	    view.zoomBy(change, pointer_document);
+	    publish();
+	  }
+
+	  // Where change is the ratio between the previous and the future scale level
+	  function zoomBy(change) {
+	    var e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { pageX: undefined, pageY: undefined };
+
+	    var pointer_document = typeof e.pageX === 'number' ? fromEventToVector(e) : undefined;
+	    view.zoomBy(change, pointer_document);
+	    publish();
+	  }
+
+	  function panStart() {
+	    var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { pageX: undefined, pageY: undefined };
+
+	    validateEventPosition('panStart', e);
+	    state.isPanning = true;
+	    state.panStart = [e.pageX, e.pageY];
+	  }
+
+	  function panMove() {
+	    var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { pageX: undefined, pageY: undefined };
+
+	    if (!state.isPanning) return;
+	    validateEventPosition('panMove', e);
+	    state.panEnd = [e.pageX, e.pageY];
+	    view.panBy(_vector2.default.sub(state.panEnd, state.panStart));
+	    state.panStart = state.panEnd;
+	    publish();
+	  }
+
+	  function panEnd() {
+	    var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { pageX: undefined, pageY: undefined };
+
+	    if (!state.isPanning) return;
+	    validateEventPosition('panEnd', e);
+	    state.isPanning = false;
+	    state.panEnd = [e.pageX, e.pageY];
+	  }
+
+	  function panBy(dx, dy) {
+	    if (dx === undefined || dy === undefined) {
+	      throw new Error('InvalidArguments: panBy(dx, dy) called with ' + dx + ', ' + dy);
+	    }
+	    view.panBy([dx, dy]);
+	    publish();
+	  }
+
+	  function decorate(_ref2) {
+	    var translate = _ref2.translate,
+	        rotate = _ref2.rotate,
+	        scale = _ref2.scale;
+
+	    // The default transform-origin for divs is '50% 50%'. The math in this
+	    // library assumes that the origin is located at the top left corner.
+	    var transformFromTopLeft = function transformFromTopLeft(transform, _ref3) {
+	      var _ref4 = _slicedToArray(_ref3, 2),
+	          cx = _ref4[0],
+	          cy = _ref4[1];
+
+	      return '\n      translate(' + -cx + 'px, ' + -cy + 'px)\n      ' + transform + '\n      translate(' + cx + 'px, ' + cy + 'px)\n    ';
+	    };
+
+	    return {
+	      translate: translate,
+	      rotate: rotate,
+	      scale: scale,
+
+	      // transformTopLeft assumes transform-origin is 'top left', default in svg
+	      transformTopLeft: '\n        translate(' + translate[0] + 'px, ' + translate[1] + 'px)\n        rotate(' + rotate + ')\n        scale(' + scale + ')\n      ',
+
+	      // transform5050 assumes transform-origin is '50% 50%', default for divs
+	      transform5050: transformFromTopLeft('\n          translate(' + translate[0] + 'px, ' + translate[1] + 'px)\n          rotate(' + rotate + ')\n          scale(' + scale + ')', (0, _centers.center_world)(view.state))
+	    };
+	  }
+
+	  function publish() {
+	    var result = decorate(view.transform);
+	    render(result);
+	    return result;
+	  }
 	}
 
 /***/ }),
@@ -1027,25 +968,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	exports['default'] = WorldView;
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	exports.default = WorldView;
 
 	var _centers = __webpack_require__(3);
 
-	var _utilsFunctional = __webpack_require__(5);
+	var _functional = __webpack_require__(6);
 
 	var _transformVector = __webpack_require__(4);
 
-	var _utilsMath = __webpack_require__(1);
+	var _math = __webpack_require__(1);
 
-	var math = _interopRequireWildcard(_utilsMath);
+	var math = _interopRequireWildcard(_math);
 
-	var _transformWorld = __webpack_require__(8);
+	var _transformWorld = __webpack_require__(5);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function WorldView(opts) {
 	  /// State
@@ -1067,10 +1010,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // The size of the container (viewport)
 	    containerSize: [1, 1]
-	  };
 
-	  /// Options
-	  var options = _extends({
+	    /// Options
+	  };var options = _extends({
 	    // Fit the world to the container when zooming and panning
 	    fit: false,
 
@@ -1092,7 +1034,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, opts);
 
 	  /// Public API
-	  return Object.defineProperties({
+	  return {
+	    get options() {
+	      return options;
+	    },
+	    get state() {
+	      return state;
+	    },
+	    get transform() {
+	      return {
+	        translate: state.world_container,
+	        rotate: state.theta,
+	        scale: state.scale
+	      };
+	    },
 	    panBy: panBy,
 	    resetContainerSize: resetContainerSize,
 	    resetZoom: resetZoom,
@@ -1107,92 +1062,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	    zoomBy: zoomBy,
 	    zoomTo: zoomTo,
 	    isZoomedOut: isZoomedOut
-	  }, {
-	    options: {
-	      get: function get() {
-	        return options;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    state: {
-	      get: function get() {
-	        return state;
-	      },
-	      configurable: true,
-	      enumerable: true
-	    },
-	    transform: {
-	      get: function get() {
-	        return {
-	          translate: state.world_container,
-	          rotate: state.theta,
-	          scale: state.scale
-	        };
-	      },
-	      configurable: true,
-	      enumerable: true
-	    }
-	  });
+	  };
 
 	  function bounded(scale) {
 	    return math.bounded(options.minZoom, scale, options.maxZoom);
 	  }
 
 	  function setOptions() {
-	    var newOptions = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	    var newOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	    options = _extends({}, options, newOptions);
 	  }
 
 	  function setWorldSize(width, height) {
-	    var transformations = withFit(_transformWorld.set('worldSize', [width, height]));
-	    state = _transformWorld.reduce(transformations, state);
+	    var transformations = withFit((0, _transformWorld.set)('worldSize', [width, height]));
+	    state = (0, _transformWorld.reduce)(transformations, state);
 	  }
 
 	  function setContainerSize(width, height) {
-	    var transformations = withFit(_transformWorld.set('containerSize', [width, height]));
-	    state = _transformWorld.reduce(transformations, state);
+	    var transformations = withFit((0, _transformWorld.set)('containerSize', [width, height]));
+	    state = (0, _transformWorld.reduce)(transformations, state);
 	  }
 
 	  function setContainerOrigin(x_document, y_document) {
-	    state = _utilsFunctional.setState(state, 'container_document', [x_document, y_document]);
+	    state = (0, _functional.setState)(state, 'container_document', [x_document, y_document]);
 	  }
 
 	  function setWorldOrigin(x_container, y_container) {
-	    var transformations = withFit(_transformWorld.set('world_container', [x_container, y_container]));
-	    state = _transformWorld.reduce(transformations, state);
+	    var transformations = withFit((0, _transformWorld.set)('world_container', [x_container, y_container]));
+	    state = (0, _transformWorld.reduce)(transformations, state);
 	  }
 
 	  function setTheta(degrees) {
-	    state = _utilsFunctional.setState(state, 'theta', degrees);
+	    state = (0, _functional.setState)(state, 'theta', degrees);
 	  }
 
 	  function setZoom(scale) {
-	    var transformations = withFit(_transformWorld.set('scale', bounded(scale)));
-	    state = _transformWorld.reduce(transformations, state);
+	    var transformations = withFit((0, _transformWorld.set)('scale', bounded(scale)));
+	    state = (0, _transformWorld.reduce)(transformations, state);
 	  }
 
 	  // Change the container size but keep what you see in the view the same.
 	  // Use this to keep things responsive.
 	  function resetContainerSize(width, height) {
 	    var change = width / state.containerSize[0];
-	    var transformations = [_transformWorld.statelessZoom(change * state.scale, [0, 0]), _transformWorld.set('containerSize', [width, height])];
-	    state = _transformWorld.reduce(transformations, state);
+	    var transformations = [(0, _transformWorld.statelessZoom)(change * state.scale, [0, 0]), (0, _transformWorld.set)('containerSize', [width, height])];
+	    state = (0, _transformWorld.reduce)(transformations, state);
 	  }
 
 	  function resetZoom() {
 	    if (options.fit) {
-	      state = _transformWorld.reduce([_transformWorld.set('scale', -1), _transformWorld.fit(options)], // use the limiting scale, and refit
-	      state);
+	      state = (0, _transformWorld.reduce)([(0, _transformWorld.set)('scale', -1), (0, _transformWorld.fit)(options)], state);
 	    } else {
-	      state = _transformWorld.reduce(_transformWorld.set('scale', bounded(1)), state);
+	      state = (0, _transformWorld.reduce)((0, _transformWorld.set)('scale', bounded(1)), state);
 	    }
 	  }
 
 	  // Scale previous scale by change amount
-	  function zoomBy(change, pointer_document) {
-	    if (change === undefined) change = 1;
+	  function zoomBy() {
+	    var change = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+	    var pointer_document = arguments[1];
 
 	    if (change <= 0) throw new Error('zoomBy:: Change must be a positive ratio.');
 	    var newZoom = bounded(state.scale * change);
@@ -1201,33 +1130,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // Zoom to a set value at a point in the document
 	  function zoomTo(newZoom, pointer_document) {
-	    var pointer_container = pointer_document instanceof Array ? _transformVector.fromDocumentToContainer(state, pointer_document) : _centers.center_container(state);
-	    var transformations = withFit(_transformWorld.statelessZoom(bounded(newZoom), pointer_container));
-	    state = _transformWorld.reduce(transformations, state);
+	    var pointer_container = pointer_document instanceof Array ? (0, _transformVector.fromDocumentToContainer)(state, pointer_document) : (0, _centers.center_container)(state);
+	    var transformations = withFit((0, _transformWorld.statelessZoom)(bounded(newZoom), pointer_container));
+	    state = (0, _transformWorld.reduce)(transformations, state);
 	  }
 
 	  // Pan by a translation vector
 	  function panBy(translation_document) {
-	    var transformations = withFit(_transformWorld.statelessPanBy(translation_document));
-	    state = _transformWorld.reduce(transformations, state);
+	    var transformations = withFit((0, _transformWorld.statelessPanBy)(translation_document));
+	    state = (0, _transformWorld.reduce)(transformations, state);
 	  }
 
 	  // Rotate by amount of degrees at a pivot position in the document
 	  function rotateBy(degrees, pivot_document) {
-	    var pivot_container = pivot_document instanceof Array ? _transformVector.fromDocumentToContainer(state, pivot_document) : _centers.center_container(state);
-	    var transformation = _transformWorld.statelessRotateBy(degrees, pivot_container);
+	    var pivot_container = pivot_document instanceof Array ? (0, _transformVector.fromDocumentToContainer)(state, pivot_document) : (0, _centers.center_container)(state);
+	    var transformation = (0, _transformWorld.statelessRotateBy)(degrees, pivot_container);
 	    state = transformation(state);
 	  }
 
 	  // Wrap a transformation with an optional fit to the size of the world.
 	  function withFit(transformations) {
-	    return [].concat(transformations, options.fit ? _transformWorld.fit(options) : _transformWorld.identity);
+	    return [].concat(transformations, options.fit ? (0, _transformWorld.fit)(options) : _transformWorld.identity);
 	  }
 
 	  function isZoomedOut() {
-	    var tolerance = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	    var tolerance = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
-	    var limit = _transformWorld.scaleLimit(state, options, options.fitNoWhitespace ? Math.max : Math.min);
+	    var limit = (0, _transformWorld.scaleLimit)(state, options, options.fitNoWhitespace ? Math.max : Math.min);
 	    var isAtMinZoom = state.scale <= options.minZoom + tolerance;
 	    var isAtFitZoom = state.scale <= limit + tolerance;
 
@@ -1246,8 +1175,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return false;
 	  }
 	}
-
-	module.exports = exports['default'];
 
 /***/ })
 /******/ ])
